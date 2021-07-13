@@ -7,7 +7,8 @@ public class EventConverter {
 
 	public static EventDTO toDTO(EventEntity e) {
 		EventDTO d= new EventDTO();
-		d.setClasses(ClassConverter.toDTO(e.getC()));
+		if(e.getC() != null)
+			d.setClasses(ClassConverter.toDTO(e.getC()));
 		d.setHappenDate(e.getHappenDate());
 		d.setId(e.getId());
 		d.setName(e.getName());
@@ -17,7 +18,8 @@ public class EventConverter {
 	
 	public static EventEntity toEntity(EventDTO d) {
 		EventEntity e= new EventEntity();
-		e.setC(ClassConverter.toEntity(d.getClasses()));
+		if(d.getClasses() != null)
+			e.setC(ClassConverter.toEntity(d.getClasses()));
 		e.setHappenDate(d.getHappenDate());
 		e.setId(d.getId());
 		e.setName(d.getName());

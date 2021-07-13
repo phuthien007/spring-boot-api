@@ -13,8 +13,14 @@ import springboot.Entity.CourseEntity;
 import springboot.Entity.PlanEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
+import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.OperationQuery;
+import springboot.FilterSpecification.Specification.CourseSpecification;
+import springboot.FilterSpecification.Specification.PlanSpecification;
 import springboot.Repository.CourseRepository;
 import springboot.Repository.PlanRepository;
+
+import java.util.Map;
 
 @Service
 public class PlanService {
@@ -32,17 +38,22 @@ public class PlanService {
 
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "plans")
-	public Page<PlanEntity> getAll(Pageable pageable, String keyword) {
-		try {
-			Long id = Long.parseLong(keyword);
-			CourseEntity course = courseRep.findById(id).get();
-			return planRep.findByNameContainingOrCourse(keyword, course, pageable);
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			return planRep.findByNameContaining(keyword, pageable);
-
+	public Page<PlanEntity> getAll(Pageable pageable, Map<String, String> keyword) {
+//		try {
+//			Long id = Long.parseLong(keyword);
+//			CourseEntity course = courseRep.findById(id).get();
+//			return planRep.findByNameContainingOrCourse(keyword, course, pageable);
+//
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//			return planRep.findByNameContaining(keyword, pageable);
+//
+//		}
+		PlanSpecification planSpec = new PlanSpecification();
+		for(String key : keyword.keySet()){
+			planSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}
+		return  planRep.findAll(planSpec, pageable);
 	}
 
 	// tìm kiếm theo id
@@ -66,9 +77,9 @@ public class PlanService {
 		PlanEntity t = planRep.findById(plan.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Plan Not Found By ID = " + plan.getId()));
 		try {
-			if (!plan.getName().equals(t.getName()))
+			if (plan.getName()!= null)
 				t.setName(plan.getName());
-			if (plan.getCourse().getId() != t.getCourse().getId()) {
+			if (plan.getCourse()!= null && plan.getCourse().getId() != null) {
 				CourseEntity course = courseRep.findById(plan.getCourse().getId())
 						.orElseThrow(() -> new ResourceNotFoundException(
 								"Course Not Found By ID = " + plan.getCourse().getId() + " Cant update this plan "));

@@ -1,6 +1,7 @@
 package springboot.Service;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -8,6 +9,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import springboot.Entity.ClassEntity;
@@ -16,6 +18,9 @@ import springboot.Entity.ExamResultEntity;
 import springboot.Entity.StudentEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
+import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.OperationQuery;
+import springboot.FilterSpecification.Specification.ExamResultSpecification;
 import springboot.Repository.ClassRepository;
 import springboot.Repository.ExamRepository;
 import springboot.Repository.ExamResultRepository;
@@ -40,7 +45,7 @@ public class ExamResultService {
 	}
 
 //	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
-//	public Page<ExamResultEntity> getAll(Pageable pageable, String keyword) {
+	public Page<ExamResultEntity> getAll(Pageable pageable, Map<String, String> keyword) {
 //		try {
 //			Long id = Long.parseLong(keyword);
 //			StudentEntity student = studentRep.findById(id).get();
@@ -52,7 +57,12 @@ public class ExamResultService {
 //			// TODO: handle exception
 //			throw new BadRequestException(e.getLocalizedMessage());
 //		}
-//	}
+		ExamResultSpecification examResultSpec = new ExamResultSpecification();
+		for(String key : keyword.keySet()){
+			examResultSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
+		}
+		return examResultRep.findAll(examResultSpec, pageable);
+	}
 
 	// tìm kiếm theo id
 	@CachePut(value = "ExamResults")
@@ -85,19 +95,19 @@ public class ExamResultService {
 		ExamResultEntity t = examResultRep.findById(examResult.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("examResult Not Found By ID = " + examResult.getId()));
 
-		if (examResult.getStudent() != null) {
+		if (examResult.getStudent() != null && examResult.getStudent().getId() != null) {
 			StudentEntity student = studentRep.findById(examResult.getStudent().getId())
 					.orElseThrow(() -> new ResourceNotFoundException("Course Not Found By ID = "
 							+ examResult.getStudent().getId() + " Cant update this examResult "));
 			t.setStudent(student);
 		}
-		if (examResult.getExam() != null) {
+		if (examResult.getExam() != null && examResult.getExam().getId() != null) {
 			ExamEntity exam = examRep.findById(examResult.getExam().getId())
 					.orElseThrow(() -> new ResourceNotFoundException(
 							"Course Not Found By ID = " + examResult.getExam().getId() + " Cant update this examResult "));
 			t.setExam(exam);
 		}
-		if (examResult.getC() != null) {
+		if (examResult.getC() != null && examResult.getC().getId() != null) {
 			ClassEntity c = classRep.findById(examResult.getC().getId())
 					.orElseThrow(() -> new ResourceNotFoundException(
 							"Course Not Found By ID = " + examResult.getC().getId() + " Cant update this examResult "));

@@ -91,7 +91,7 @@ public class UserService implements UserDetailsService  {
 	
 	
 	// send email
-	public  void sendEmail(String email, String token) throws UnsupportedEncodingException, MessagingException {
+	public  void sendEmail(StringBuffer path ,String email, String token) throws UnsupportedEncodingException, MessagingException {
 		MimeMessage msg =  mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(msg);
 		helper.setFrom("phailamsaonana@gmail.com", "Tran Thien Phu");
@@ -100,7 +100,7 @@ public class UserService implements UserDetailsService  {
 		String content = " <p> Hello , </p> "
 				+ "<p>You have requested to reset your password.</p>" 
 				+ "<p>Here's token you must send to server: </p>"
-				+ "<p><b>"+ token + "</b></p>"
+				+ "<p><b>"+ path + "/" + token + "</b></p>"
 				+ "Ignore this email if you do remember your password, or you have not made request!";
 		helper.setSubject(subject);
 		helper.setText(content, true);
@@ -165,22 +165,19 @@ public class UserService implements UserDetailsService  {
 		UserEntity t = userRep.findById(user.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("user Not Found By ID = " + user.getId()));
 		try {
-			if (!user.getUsername().equals(t.getUsername()))
+			if (user.getUsername() != null)
 				t.setUsername(user.getUsername());
-			if (!user.getFullname().equals(t.getFullname()))
+			if (user.getFullname() != null)
 				t.setFullname(user.getFullname());
-			if (user.getEmail().equals(t.getEmail()))
+			if (user.getEmail() != null)
 				t.setEmail(user.getEmail());
-			if (user.getRole().equals(t.getRole()))
+			if (user.getRole() != null)
 				t.setRole(user.getRole());
-			
-			if ( (t.getBirthday() != null && user.getBirthday() != t.getBirthday())
-					|| user.getBirthday() !=null)
+			if (user.getBirthday() !=null)
 				t.setBirthday(user.getBirthday());						
-			if ( (t.getLockoutDate() !=null && user.getLockoutDate() != (t.getLockoutDate()) )
-					|| user.getLockoutDate() != null )
+			if ( user.getLockoutDate() != null )
 				t.setLastLoginDate(user.getLastLoginDate());
-			if (user.getLoginFailedCount() != t.getLoginFailedCount())
+			if (user.getUsername() != null)
 				t.setLoginFailedCount(user.getLoginFailedCount());
 			
 			return userRep.save(t);

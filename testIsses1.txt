@@ -1,0 +1,14 @@
+hỗ trợ in hoa => done
+optimize sql
+specification 
+=>	update query all parameter 
+	sorting by two way:
+array ( fields sort in array ), 
+integrated in field query : vấn đề ở chỗ chỉ nhập liệu thêm |asc ( |desc) đối với field type is string.?
+=> not yet done ( xong cơ bản) 
+
+trả về dữ liệu khác null => done
+UPDATE ONLY FIELD ?  => done
+update config mail
+tìm hiểu jhipster
+chỉnh lại post method	

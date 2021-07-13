@@ -3,7 +3,9 @@ package springboot.Model.DTO;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class UserDTO {
 
 

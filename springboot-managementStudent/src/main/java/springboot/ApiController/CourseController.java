@@ -1,5 +1,6 @@
 package springboot.ApiController;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,10 +39,19 @@ public class CourseController {
 	// lấy tất cả các bản ghi
 	@GetMapping("public/course")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
-	public ResponseEntity<?> getAllcourses(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
-			@RequestParam(name = "keyword", required = false) String keyword) {
+	public ResponseEntity<?> getAllcourses(
+			// Pageable
+			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+			// filter data
+			@RequestParam(name="name",required = false) String name,
+			@RequestParam(name="createDate", required = false) Date createDate,
+			@RequestParam(name = "type", required = false) String type) {
 		Page<CourseEntity> courses =courseSer.getAll(PageRequest.of(page, 20));
-		if (keyword != null)
+		Map<String, String> keyword = new HashMap<>();
+		if(name!=null) keyword.put("name",name);
+		if(createDate != null) keyword.put("createDate",createDate.toString());
+		if(type != null) keyword.put("type",type);
+		if (!keyword.isEmpty())
 			courses = courseSer.getAll(PageRequest.of(page, 20), keyword);
 //			.stream().map(course -> CourseConverter.toDTO(course)).collect(Collectors.toList());
 //				.stream().map(course -> CourseConverter.toDTO(course)).collect(Collectors.toList());

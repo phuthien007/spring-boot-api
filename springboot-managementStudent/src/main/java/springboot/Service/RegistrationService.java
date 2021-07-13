@@ -85,9 +85,9 @@ public class RegistrationService {
 		RegistrationEntity t = registrationRep.findById(ID)
 				.orElseThrow(() -> new ResourceNotFoundException("registration Not Found By ID = " + registration.getId()));
 		try {
-			if( !registration.getStatus().equals(t.getStatus()))
+			if( registration.getStatus()!= null)
 				t.setStatus(registration.getStatus());
-			if( !registration.getRegisterDay().equals(t.getRegisterDay()))
+			if(  registration.getRegisterDay()!= null )
 				t.setRegisterDay(registration.getRegisterDay());
 			return registrationRep.save(t);
 		} catch (Exception e) {

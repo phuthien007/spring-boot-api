@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -81,11 +83,14 @@ public class UserController {
 	}
 
 	@PostMapping("public/user/forgot-password")
-	public String forgotPassword(@RequestParam String email) {
+	@ResponseStatus(code = HttpStatus.CONTINUE)
+	public String forgotPassword(@RequestParam String email, HttpServletRequest request) {
+		StringBuffer path = request.getRequestURL();
 		String token = RandomString.make(45);
+		System.out.println(token);
 		try {
-			userSer.updateResetPasswordToken(token, email);	
-			userSer.sendEmail(email, token);
+			userSer.updateResetPasswordToken( token, email);	
+			userSer.sendEmail(path ,email, token);
 			return "Next Page";
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -93,12 +98,12 @@ public class UserController {
 		}
 	}
 
-	@PostMapping("public/user/reset-password")
-	public String forgotPassword(@RequestParam String tokenReset ,@RequestBody AuthRequest auth) {
+	@PostMapping("public/user/forgot-password/{token}")
+	public String forgotPassword(@PathVariable(name = "token") String tokenReset ,@RequestBody String password) {
 		try {
 			UserEntity user = userSer.getUserByPwToken(tokenReset);
-			userSer.updatePassword(user, auth.getPassword());
-			return "Success";
+			userSer.updatePassword(user, password);
+			return "User has username : " + user.getUsername() +  " is updated Successfully";
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw new BadRequestException(e.getMessage());

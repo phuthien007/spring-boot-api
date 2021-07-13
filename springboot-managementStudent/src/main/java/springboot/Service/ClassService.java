@@ -14,9 +14,14 @@ import springboot.Entity.CourseEntity;
 import springboot.Entity.TeacherEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
+import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.OperationQuery;
+import springboot.FilterSpecification.Specification.ClassSpecification;
 import springboot.Repository.ClassRepository;
 import springboot.Repository.CourseRepository;
 import springboot.Repository.TeacherRepository;
+
+import java.util.Map;
 
 @Service
 public class ClassService {
@@ -39,19 +44,24 @@ public class ClassService {
 
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "classes")
-	public Page<ClassEntity> getAll(Pageable pageable, String keyword) {
-		try {
-			Long id = Long.parseLong(keyword);
-			CourseEntity course = courseRep.findById(id).get();
-			TeacherEntity teacher = teacherRep.findById(id).get();
-			return classRep.findByNameContainingOrStatusContainingOrTeacherOrCourse(keyword, keyword, teacher, course,
-					pageable);
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			return classRep.findByNameContainingOrStatusContaining(keyword, keyword, pageable);
-
+	public Page<ClassEntity> getAll(Pageable pageable, Map<String, String> keyword) {
+//		try {
+//			Long id = Long.parseLong(keyword);
+//			CourseEntity course = courseRep.findById(id).get();
+//			TeacherEntity teacher = teacherRep.findById(id).get();
+//			return classRep.findByNameContainingOrStatusContainingOrTeacherOrCourse(keyword, keyword, teacher, course,
+//					pageable);
+//
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//			return classRep.findByNameContainingOrStatusContaining(keyword, keyword, pageable);
+//
+//		}
+		ClassSpecification classSpec = new ClassSpecification();
+		for(String key : keyword.keySet()){
+			classSpec.add( new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}
+		return classRep.findAll(classSpec, pageable);
 	}
 
 	// tìm kiếm theo id
@@ -62,13 +72,16 @@ public class ClassService {
 
 	// thêm mới 1 bản ghi
 	public ClassEntity addclass(ClassEntity cl) {
-		CourseEntity course = courseRep.findById(cl.getCourse().getId())
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"Course Not Found By ID = " + cl.getCourse().getId() + " Cant add this class "));
-		TeacherEntity teacher = teacherRep.findById(cl.getTeacher().getId())
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"Teacher Not Found By ID = " + cl.getTeacher().getId() + " Cant add this class "));
-
+//		CourseEntity course = courseRep.findById(cl.getCourse().getId())
+//				.orElseThrow(() -> new ResourceNotFoundException(
+//						"Course Not Found By ID = " + cl.getCourse().getId() + " Cant add this class "));
+//		TeacherEntity teacher = teacherRep.findById(cl.getTeacher().getId())
+//				.orElseThrow(() -> new ResourceNotFoundException(
+//						"Teacher Not Found By ID = " + cl.getTeacher().getId() + " Cant add this class "));
+		CourseEntity course = new CourseEntity();
+		course.setId(cl.getCourse().getId());
+		TeacherEntity teacher = new TeacherEntity();
+		teacher.setId(cl.getTeacher().getId());
 		cl.setCourse(course);
 		cl.setTeacher(teacher);
 		return classRep.save(cl);
@@ -76,30 +89,32 @@ public class ClassService {
 
 	// cập nhật dữ liệu
 	@CachePut(value = "classes")
-	public ClassEntity updateclass(ClassEntity cl) {
-		ClassEntity t = classRep.findById(cl.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("class Not Found By ID = " + cl.getId()));
+	public ClassEntity updateclass(ClassEntity Class) {
+		ClassEntity t = classRep.findById(Class.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("class Not Found By ID = " + Class.getId()));
 		try {
-			if (t.getName() != null && !cl.getName().equals(t.getName()))
-				t.setName(cl.getName());
-			if (cl.getCourse().getId() != t.getCourse().getId()) {
-				CourseEntity course = courseRep.findById(cl.getCourse().getId())
+			if (Class.getName() != null )
+				t.setName(Class.getName());
+			if (Class.getCourse() != null && Class.getCourse().getId() != null) {
+				System.out.println("Run course");
+				CourseEntity course = courseRep.findById(Class.getCourse().getId())
 						.orElseThrow(() -> new ResourceNotFoundException(
-								"Course Not Found By ID = " + cl.getCourse().getId() + " Cant update this class "));
+								"Course Not Found By ID = " + Class.getCourse().getId() + " Cant update this class "));
 				t.setCourse(course);
 			}
-			if (cl.getTeacher().getId() != t.getTeacher().getId()) {
-				TeacherEntity teacher = teacherRep.findById(cl.getTeacher().getId())
+			if (Class.getTeacher() != null && Class.getTeacher().getId() != null ) {
+				System.out.println("Run teacher");
+				TeacherEntity teacher = teacherRep.findById(Class.getTeacher().getId())
 						.orElseThrow(() -> new ResourceNotFoundException(
-								"Teacher Not Found By ID = " + cl.getCourse().getId() + " Cant update this class "));
+								"Teacher Not Found By ID = " + Class.getCourse().getId() + " Cant update this class "));
 				t.setTeacher(teacher);
 			}
-			if (cl.getStartDate() != t.getStartDate())
-				t.setStartDate(cl.getStartDate());
-			if (t.getEndDate() != null && cl.getEndDate() != t.getEndDate())
-				t.setEndDate(cl.getEndDate());
-			if ( t.getStatus()!= null && !cl.getStatus().equals(t.getStatus()))
-				t.setStatus(cl.getStatus());
+			if (Class.getStartDate() != null )
+				t.setStartDate(Class.getStartDate());
+			if (Class.getEndDate() != null )
+				t.setEndDate(Class.getEndDate());
+			if ( Class.getStatus()!= null )
+				t.setStatus(Class.getStatus());
 			return classRep.save(t);
 		} catch (Exception e) {
 			// TODO: handle exception

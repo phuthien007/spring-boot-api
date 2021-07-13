@@ -1,5 +1,6 @@
 package springboot.ApiController;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,8 +39,21 @@ public class ExamResultController {
 	// lấy tất cả các bản ghi
 	@GetMapping("public/examResult")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
-	public ResponseEntity<?> getAllexamResults(@RequestParam(name = "page", defaultValue = "0", required = false) int page) {
+	public ResponseEntity<?> getAllexamResults(
+			// pageable
+			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+			// filter params
+			@RequestParam(name = "score",  required = false) Long score,
+			@RequestParam(name = "resultDate", required = false) Date resultDate,
+			@RequestParam(name = "note",required = false) String note) {
+
 		Page<ExamResultEntity> examResults =examResultSer.getAll(PageRequest.of(page, 20));
+		Map<String, String > keyword = new HashMap<>();
+		if(score != null) keyword.put("score", String.valueOf(score));
+		if(resultDate != null) keyword.put("resultDate", resultDate.toString());
+		if(note != null ) keyword.put("note", note);
+		if( !keyword.isEmpty())
+			examResultSer.getAll(PageRequest.of(page, 20), keyword);
 //		if (keyword != null) {
 //////			System.out.println("thuc hien 1");
 //			examResults = examResultSer.getAll(PageRequest.of(page, 20), keyword);
@@ -47,6 +61,7 @@ public class ExamResultController {
 //		}
 //			.stream().map(examResult -> ExamResultConverter.toDTO(examResult)).collect(Collectors.toList());
 //				.stream().map(examResult -> ExamResultConverter.toDTO(examResult)).collect(Collectors.toList());
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("totalElements", String.valueOf(examResults.getTotalElements()));
 		headers.add("page", String.valueOf(examResults.getNumber()));

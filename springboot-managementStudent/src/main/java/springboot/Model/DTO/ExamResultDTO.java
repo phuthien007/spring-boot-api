@@ -1,7 +1,9 @@
 package springboot.Model.DTO;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Date;
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class ExamResultDTO {
 	private Long id;
 	

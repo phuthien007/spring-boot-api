@@ -1,5 +1,6 @@
 package springboot.ApiController;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,16 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import springboot.Entity.ClassEntity;
 import springboot.Exception.BadRequestException;
@@ -36,69 +28,87 @@ public class ClassController {
 	private ClassService clSer;
 
 	// lấy tất cả các bản ghi
-	@GetMapping("public/cl")
+	@GetMapping("public/class")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
-	public ResponseEntity<?> getAllcls(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
-			@RequestParam(name = "keyword", defaultValue = "" ,required = false) String keyword) {
-		Page<ClassEntity> cls =clSer.getAll(PageRequest.of(page, 20));
-		if (keyword != "")
-			cls = clSer.getAll(PageRequest.of(page, 20), keyword);
+	@ResponseBody
+	public ResponseEntity<?> getAllClass(
+			// pageable
+			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+			// filter Params
+			@RequestParam(name = "name" ,required = false) String name,
+			@RequestParam(name = "startDate" ,required = false) Date startDate,
+			@RequestParam(name = "endDate" ,required = false) Date endDate,
+			@RequestParam(name = "status" ,required = false) String status) {
+		Page<ClassEntity> clasess =clSer.getAll(PageRequest.of(page, 20));
+		Map<String, String> keyword = new HashMap<>();
+		if(name != null) keyword.put("name", name);
+		if(startDate != null) keyword.put("startDate", startDate.toString());
+		if(endDate != null ) keyword.put("endDate", endDate.toString());
+		if(status != null) keyword.put("status", status);
+		if (!keyword.isEmpty())
+			clasess = clSer.getAll(PageRequest.of(page, 20), keyword);
 //			.stream().map(cl -> ClassConverter.toDTO(cl)).collect(Collectors.toList());
 //				.stream().map(cl -> ClassConverter.toDTO(cl)).collect(Collectors.toList());
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("totalElements", String.valueOf(cls.getTotalElements()));
-		headers.add("page", String.valueOf(cls.getNumber()));
-		headers.add("elementOfPages", String.valueOf(cls.getNumberOfElements()));
-		headers.add("numberOfPages", String.valueOf(cls.getTotalPages()));
+		headers.add("totalElements", String.valueOf(clasess.getTotalElements()));
+		headers.add("page", String.valueOf(clasess.getNumber()));
+		headers.add("elementOfPages", String.valueOf(clasess.getNumberOfElements()));
+		headers.add("numberOfPages", String.valueOf(clasess.getTotalPages()));
 //		Log.info("IN getAllusers : size : {}",cls.getTotalElements()  );	
 		return ResponseEntity.ok().headers(headers).body(
-				cls.toList().stream().map(cl -> ClassConverter.toDTO(cl)).collect(Collectors.toList()) );
+				clasess.toList().stream().map(Class -> ClassConverter.toDTO(Class)).collect(Collectors.toList()) );
 	}
 
 	// lấy bản ghi theo id
-	@GetMapping("public/cl/{id}")
-	public ClassDTO getclById(@PathVariable(value = "id") Long clId) {
-		return ClassConverter.toDTO(clSer.findById(clId));
+	@GetMapping("public/class/{id}")
+	public ClassDTO getClassById(@PathVariable(value = "id") Long classId) {
+		return ClassConverter.toDTO(clSer.findById(classId));
 	}
 
 	// thêm mới bản ghi
-	@PostMapping("public/cl")
+	@PostMapping("public/class")
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public ClassDTO addcl(@RequestBody @Validated ClassDTO cl) {
+	public ClassDTO addClass(@RequestBody @Validated ClassDTO CLass) {
 		try {
-			if (cl.getName() == null || cl.getCourse().getId() == null || cl.getTeacher().getId() == null)
+			if (CLass.getName() == null || CLass.getCourse().getId() == null
+					|| CLass.getTeacher().getId() == null)
 				throw new BadRequestException("Value is missing");
-			ClassEntity t = ClassConverter.toEntity(cl);
+			ClassEntity t = ClassConverter.toEntity(CLass);
 			t.setId(null);
 			return ClassConverter.toDTO(clSer.addclass(t));
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw new BadRequestException("Something went wrong!");
 		}
-		
+
 	}
 
 	// sửa bản ghi
-	@PutMapping("public/cl")
-	public ClassDTO updateclById(@RequestBody @Validated ClassDTO cl) {
+	@PutMapping("public/class")
+	public ClassDTO updateClassById(@RequestBody ClassDTO Class) {
 		try {
-			if (cl.getId() == null)
+			System.out.println("Update Class");
+			if (Class.getId() == null){
+				System.out.println("error ID");
 				throw new BadRequestException("Value id is missing");
-			return ClassConverter.toDTO(clSer.updateclass(ClassConverter.toEntity(cl)));
+			}
+			System.out.println("error out");
+			return ClassConverter.toDTO(clSer.updateclass(ClassConverter.toEntity(Class)));
 		} catch (Exception e) {
+			System.out.println("Exception value");
 			// TODO: handle exception
-			throw new BadRequestException("Value id is missing");
+			throw new BadRequestException(e.getMessage());
 		}
-		
+
 	}
 
 	// xóa bản ghi
-	@DeleteMapping("cl/{id}")
-	public Map<String, Boolean> deleteclById(@PathVariable(value = "id") Long clId) {
+	@DeleteMapping("class/{id}")
+	public Map<String, Boolean> deleteClassById(@PathVariable(value = "id") Long classId) {
 		Map<String, Boolean> response = new HashMap<String, Boolean>();
-		response.put("status", clSer.deleteById(clId));
+		response.put("status", clSer.deleteById(classId));
 		return response;
 	}
-	
-	
+
+
 }

@@ -38,10 +38,16 @@ public class PlanController {
 	// lấy tất cả các bản ghi
 	@GetMapping("public/plan")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
-	public ResponseEntity<?> getAllplans(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
-			@RequestParam(name = "keyword", required = false) String keyword) {
+	public ResponseEntity<?> getAllplans(
+			// pageable
+			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+			// filter params
+			@RequestParam(name = "name", required = false) String name
+	) {
 		Page<PlanEntity> plans =planSer.getAll(PageRequest.of(page, 20));
-		if (keyword != null)
+		Map<String, String> keyword = new HashMap<>();
+		if(name != null) keyword.put("name",name);
+		if (!keyword.isEmpty())
 			plans = planSer.getAll(PageRequest.of(page, 20), keyword);
 //			.stream().map(plan -> PlanConverter.toDTO(plan)).collect(Collectors.toList());
 //				.stream().map(plan -> PlanConverter.toDTO(plan)).collect(Collectors.toList());

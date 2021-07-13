@@ -13,8 +13,13 @@ import springboot.Entity.CourseEntity;
 import springboot.Entity.ExamEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
+import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.OperationQuery;
+import springboot.FilterSpecification.Specification.ExamSpecification;
 import springboot.Repository.CourseRepository;
 import springboot.Repository.ExamRepository;
+
+import java.util.Map;
 
 @Service
 public class ExamService {
@@ -35,17 +40,20 @@ public class ExamService {
 	}
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "exams")
-	public Page<ExamEntity> getAll(Pageable pageable ,String keyword) {
-		try {
-			Long id = Long.parseLong(keyword);
-			CourseEntity course = courseRep.findById(id).get();
-			return examRep.findByNameContainingOrCourse(keyword, course, pageable);
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			return examRep.findByNameContaining(keyword, pageable);
-
+	public Page<ExamEntity> getAll(Pageable pageable , Map<String, String> keyword) {
+//		try {
+//			Long id = Long.parseLong(keyword);
+//			CourseEntity course = courseRep.findById(id).get();
+//			return examRep.findByNameContainingOrCourse(keyword, course, pageable);
+//
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//			return examRep.findByNameContaining(keyword, pageable);
+		ExamSpecification examSpec = new ExamSpecification();
+		for( String key : keyword.keySet()){
+			examSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}
+		return  examRep.findAll(examSpec, pageable);
 	}
 
 	// tìm kiếm theo id
@@ -72,9 +80,9 @@ public class ExamService {
 				.orElseThrow(() -> new ResourceNotFoundException("exam Not Found By ID = " + exam.getId()));
 		
 		try {
-			if(!exam.getName().equals(t.getName()))
+			if(exam.getName() != null)
 				t.setName(exam.getName());
-			if (exam.getCourse().getId() != t.getCourse().getId()) {
+			if (exam.getCourse() != null && exam.getCourse().getId() != null ) {
 				CourseEntity course = courseRep.findById(exam.getCourse().getId())
 						.orElseThrow(() -> new ResourceNotFoundException(
 								"Course Not Found By ID = " + exam.getCourse().getId() + " Cant update this plan "));

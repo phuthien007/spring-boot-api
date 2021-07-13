@@ -9,10 +9,13 @@ public class ExamResultConverter {
 		ExamResultDTO d= new ExamResultDTO();
 		d.setId(e.getId());
 		d.setScore(e.getScore());
-		d.setClasses(ClassConverter.toDTO(e.getC()));
-		d.setExam(ExamConverter.toDTO(e.getExam()));
+		if(e.getC() != null)
+			d.setClasses(ClassConverter.toDTO(e.getC()));
+		if(e.getExam() != null)
+			d.setExam(ExamConverter.toDTO(e.getExam()));
 		d.setNote(e.getNote());
-		d.setStudent(StudentConverter.toDTO(e.getStudent()));
+		if(e.getExam() != null)
+			d.setStudent(StudentConverter.toDTO(e.getStudent()));
 		d.setResultDate(e.getResultDate());
 		
 		return d;
@@ -22,10 +25,13 @@ public class ExamResultConverter {
 		ExamResultEntity e= new ExamResultEntity();
 		e.setId(d.getId());
 		e.setScore(d.getScore());
-		e.setExam(ExamConverter.toEntity(d.getExam()));
+		if(d.getExam() != null)
+			e.setExam(ExamConverter.toEntity(d.getExam()));
 		e.setNote(d.getNote());
-		e.setStudent(StudentConverter.toEntity(d.getStudent()));
-		e.setC(ClassConverter.toEntity(d.getClasses()));
+		if(d.getStudent() != null)
+			e.setStudent(StudentConverter.toEntity(d.getStudent()));
+		if(d.getClasses() != null)
+			e.setC(ClassConverter.toEntity(d.getClasses()));
 		e.setResultDate(d.getResultDate());
 		return e;
 	};	

@@ -1,6 +1,7 @@
 package springboot.Service;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,6 +16,9 @@ import springboot.Entity.ClassEntity;
 import springboot.Entity.EventEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
+import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.OperationQuery;
+import springboot.FilterSpecification.Specification.EventSpecification;
 import springboot.Repository.ClassRepository;
 import springboot.Repository.EventRepository;
 
@@ -37,20 +41,25 @@ public class EventService {
 	}
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "event")
-	public Page<EventEntity> getAll(Pageable pageable ,String keyword) {
-		try {
-			Long id = Long.parseLong(keyword);
-			ClassEntity cl = clRep.findById(id).get();
-//			System.out.println("By id: "+ id);
-//			System.out.println(cl);
-			return eventRep.findByNameContainingOrStatusContainingOrC(keyword,keyword, cl, pageable);
-
-		} catch (Exception e) {
-			// TODO: handle exc'erroreption
-//			System.out.println("error "+e.getLocalizedMessage());
-			return eventRep.findByNameContainingOrStatusContaining(keyword,keyword, pageable);
-
+	public Page<EventEntity> getAll(Pageable pageable , Map<String, String> keyword) {
+//		try {
+//			Long id = Long.parseLong(keyword);
+//			ClassEntity cl = clRep.findById(id).get();
+////			System.out.println("By id: "+ id);
+////			System.out.println(cl);
+//			return eventRep.findByNameContainingOrStatusContainingOrC(keyword,keyword, cl, pageable);
+//
+//		} catch (Exception e) {
+//			// TODO: handle exc'erroreption
+////			System.out.println("error "+e.getLocalizedMessage());
+//			return eventRep.findByNameContainingOrStatusContaining(keyword,keyword, pageable);
+		EventSpecification eventSpec = new EventSpecification();
+		for(String key : keyword.keySet()){
+			eventSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}
+
+		return  eventRep.findAll(eventSpec, pageable);
+
 	}
 
 	// tìm kiếm theo id
@@ -77,17 +86,17 @@ public class EventService {
 				.orElseThrow(() -> new ResourceNotFoundException("event Not Found By ID = " + event.getId()));
 		
 		try {
-			if( !event.getName().equals(t.getName()))
+			if( event.getName() != null)
 				t.setName(event.getName());
-			if (event.getC().getId() != t.getC().getId()) {
+			if (event.getC() != null && event.getC().getId() != null) {
 				ClassEntity cl = clRep.findById(event.getC().getId())
 						.orElseThrow(() -> new ResourceNotFoundException(
 								"class Not Found By ID = " + event.getC().getId() + " Cant update this event "));
 				t.setC(cl);
 			}
-			if( !event.getStatus().equals(t.getStatus()))
+			if( event.getStatus() != null)
 				t.setStatus(event.getStatus());
-			if(t.getHappenDate() != null && !event.getHappenDate().equals(t.getHappenDate()))
+			if(event.getHappenDate() != null)
 				t.setHappenDate(event.getHappenDate());
 			return eventRep.save(t);
 		} catch (Exception e) {

@@ -1,6 +1,7 @@
 package springboot.Service;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import springboot.Entity.StudentEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
+import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.OperationQuery;
+import springboot.FilterSpecification.Specification.StudentSpecification;
 import springboot.Repository.StudentRepository;
 
 @Service
@@ -29,10 +33,15 @@ public class StudentService {
 	}
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "students")
-	public Page<StudentEntity> getAll(Pageable pageable ,String keyword) {
-		return studentRep
-		.findByAddressContainingOrFullnameContainingOrEmailContainingOrPhoneContainingOrNoteContaining(
-				keyword, keyword, keyword, keyword, keyword, pageable);
+	public Page<StudentEntity> getAll(Pageable pageable , Map<String, String> keyword) {
+//		return studentRep
+//		.findByAddressContainingOrFullnameContainingOrEmailContainingOrPhoneContainingOrNoteContaining(
+//				keyword, keyword, keyword, keyword, keyword, pageable);
+		StudentSpecification studentSpec = new StudentSpecification();
+		for( String key : keyword.keySet()){
+			studentSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
+		}
+		return studentRep.findAll(studentSpec, pageable);
 	}
 
 	// tìm kiếm theo id
@@ -61,19 +70,19 @@ public class StudentService {
 		StudentEntity t = studentRep.findById(student.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Student Not Found By ID = " + student.getId()));
 		try {
-			if (!student.getFullname().equals(t.getFullname()))
+			if (student.getFullname()!= null)
 				t.setFullname(student.getFullname());
-			if (!student.getAddress().equals(t.getAddress()))
+			if (student.getAddress()!= null)
 				t.setAddress(student.getAddress());
-			if (!student.getEmail().equals(t.getEmail()))
+			if (student.getEmail()!= null)
 				t.setEmail(student.getEmail());
-			if (t.getFacebook() != null && !student.getFacebook().equals(t.getFacebook()))
+			if (student.getFacebook()!= null )
 				t.setFacebook(student.getFacebook());
-			if (t.getPhone() != null && !student.getPhone().equals(t.getPhone()))
+			if (student.getPhone()!= null )
 				t.setPhone(student.getPhone());
-			if (t.getBirthday() != null && student.getBirthday() != t.getBirthday() )
+			if (student.getBirthday()!= null )
 				t.setBirthday(student.getBirthday());
-			if (t.getNote() != null && !student.getNote().equals(t.getNote()))
+			if (student.getNote()!= null )
 				t.setNote(student.getNote());
 			return studentRep.save(t);
 		} catch (Exception e) {

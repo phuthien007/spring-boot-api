@@ -38,10 +38,16 @@ public class ExamController {
 	// lấy tất cả các bản ghi
 	@GetMapping("public/exam")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
-	public ResponseEntity<?> getAllexams(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
-			@RequestParam(name = "keyword", defaultValue = "" ,required = false) String keyword) {
+	public ResponseEntity<?> getAllexams(
+			// pageable
+			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+			// filter parmas
+			@RequestParam(name = "name", defaultValue = "" ,required = false) String name
+	) {
 		Page<ExamEntity> exams =examSer.getAll(PageRequest.of(page, 20));
-		if (keyword != "")
+		Map<String, String> keyword = new HashMap<>();
+		if(name != null) keyword.put("name", name);
+		if (!keyword.isEmpty())
 			exams = examSer.getAll(PageRequest.of(page, 20), keyword);
 //			.stream().map(exam -> ExamConverter.toDTO(exam)).collect(Collectors.toList());
 //				.stream().map(exam -> ExamConverter.toDTO(exam)).collect(Collectors.toList());

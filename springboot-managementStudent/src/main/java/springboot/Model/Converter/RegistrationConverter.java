@@ -17,10 +17,12 @@ public class RegistrationConverter {
 	
 	public static RegistrationEntity toEntity(RegistrationDTO d) {
 		RegistrationEntity e= new RegistrationEntity();
-		e.setC(ClassConverter.toEntity(d.getC()));
+		if(d.getC() != null)
+			e.setC(ClassConverter.toEntity(d.getC()));
 		
 		e.setRegisterDay(d.getRegisterDay());
-		e.setS(StudentConverter.toEntity(d.getS()));
+		if(d.getS() != null)
+			e.setS(StudentConverter.toEntity(d.getS()));
 		e.setStatus(d.getStatus());
 		return e;
 	}

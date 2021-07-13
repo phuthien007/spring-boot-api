@@ -9,7 +9,8 @@ public class ExamConverter {
 		ExamDTO d = new ExamDTO();
 		d.setId(e.getId());
 		d.setName(e.getName());
-		d.setCourse(CourseConverter.toDTO(e.getCourse()));
+		if(e.getCourse() != null)
+			d.setCourse(CourseConverter.toDTO(e.getCourse()));
 		
 		return d;
 	}
@@ -18,7 +19,8 @@ public class ExamConverter {
 		ExamEntity e = new ExamEntity();
 		e.setId(d.getId());;
 		e.setName(d.getName());
-		e.setCourse(CourseConverter.toEntity(d.getCourse()));
+		if(d.getCourse() != null)
+			e.setCourse(CourseConverter.toEntity(d.getCourse()));
 		
 		return e;
 	}

@@ -1,15 +1,21 @@
 package springboot.Model.DTO;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Date;
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClassDTO {
 
 	private Long id;
 
 	private String name;
 
+	@JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "yyyy-MM-dd@HH:mm:ss.SSSZ", shape = JsonFormat.Shape.STRING)
 	private Date startDate;
 
+	@JsonFormat( pattern = "yyyy-MM-dd@HH:mm:ss.SSSZ", shape = JsonFormat.Shape.STRING)
 	private Date endDate;
 
 	private CourseDTO course;

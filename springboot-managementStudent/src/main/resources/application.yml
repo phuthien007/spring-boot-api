@@ -5,28 +5,33 @@ spring:
     password: Thienphu1
     username: postgres
     
-  jpa:    hibernate:      ddl-auto: update
+  jpa:
+    hibernate:
+      ddl-auto: update
       
     show-sql: true
     generate-ddl: true
     
-    properties:      hibernate:
+    properties:
+      hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         
   mail:
     host: smtp.gmail.com
     password: nhutaikhoan
     port: 587
-    properties:      mail:
+    properties:
+      mail:
         smtp:
           auth: true
           starttls: 
             enable: true
     username: phailamsaonana@gmail.com
-       
-logging:
-  level:    org:
-      hibernate:
-        SQL: DEBUG
+#
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL: DEBUG
        
 

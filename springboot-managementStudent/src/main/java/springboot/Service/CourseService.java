@@ -1,6 +1,7 @@
 package springboot.Service;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import springboot.Entity.CourseEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
+import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.OperationQuery;
+import springboot.FilterSpecification.Specification.CourseSpecification;
 import springboot.Repository.CourseRepository;
 
 @Service
@@ -30,8 +34,14 @@ public class CourseService {
 
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "courses")
-	public Page<CourseEntity> getAll(Pageable pageable, String keyword) {
-		return courseRep.findByNameContainingOrTypeContaining(keyword, keyword, pageable);
+	public Page<CourseEntity> getAll(Pageable pageable, Map<String, String> keyword) {
+
+		CourseSpecification courseSpec = new CourseSpecification();
+		for( String key : keyword.keySet() ){
+			courseSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
+		}
+		return  courseRep.findAll(courseSpec, pageable);
+//		return courseRep.findByNameContainingOrTypeContaining(keyword, keyword, pageable);
 	}
 
 	// tìm kiếm theo id
@@ -53,13 +63,13 @@ public class CourseService {
 		CourseEntity t = courseRep.findById(course.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Course Not Found By ID = " + course.getId()));
 		try {
-			if (!course.getName().equals(t.getName())) {
-				System.out.println("old: " + t.getName() + " new: " + course.getName());
+			if (course.getName() != null) {
+//				System.out.println("old: " + t.getName() + " new: " + course.getName());
 
 				t.setName(course.getName());
 			}
-			if (!course.getType().equals(t.getType())) {
-				System.out.println("old: " + t.getType() + " new: " + course.getType());
+			if (course.getType() != null) {
+//				System.out.println("old: " + t.getType() + " new: " + course.getType());
 
 				t.setType(course.getType());
 			}

@@ -31,7 +31,8 @@ public class UserConverter {
 		e.setLoginFailedCount(d.getLoginFailedCount());
 		e.setUsername(d.getUsername());
 		e.setPassword(d.getPassword());
-		e.setRole(RoleConverter.toEntity(d.getRole()) );
+		if(d.getRole() != null)
+			e.setRole(RoleConverter.toEntity(d.getRole()) );
 		return e;
 	}
 	

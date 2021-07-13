@@ -1,5 +1,6 @@
 package springboot.ApiController;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,10 +39,21 @@ public class EventController {
 	// lấy tất cả các bản ghi
 	@GetMapping("public/event")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
-	public ResponseEntity<?> getAllevents(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
-			@RequestParam(name = "keyword" ,required = false) String keyword) {
+	public ResponseEntity<?> getAllevents(
+			// pageable
+			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+			// filter params
+			@RequestParam(name = "name" ,required = false) String name,
+			@RequestParam(name = "createDate" ,required = false) Date createDate,
+			@RequestParam(name = "status" ,required = false) String status,
+			@RequestParam(name = "happenDate" ,required = false) Date happenDate) {
 		Page<EventEntity> events =eventSer.getAll(PageRequest.of(page, 20));
-		if (keyword != null) {
+		Map<String, String> keyword = new HashMap<>();
+		if(name != null) keyword.put("name", name);
+		if(createDate != null) keyword.put("createDate", createDate.toString());
+		if(status != null) keyword.put("status", status);
+		if(happenDate != null) keyword.put("happenDate", happenDate.toString());
+		if (!keyword.isEmpty()) {
 //			System.out.println("thuc hien 1");
 			events = eventSer.getAll(PageRequest.of(page, 20), keyword);
 //			System.out.println("thuc hien 1");

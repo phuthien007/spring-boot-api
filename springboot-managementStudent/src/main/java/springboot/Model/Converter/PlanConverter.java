@@ -17,7 +17,8 @@ public class PlanConverter {
 		PlanEntity e = new PlanEntity();
 		e.setId(d.getId());
 		e.setName(d.getName());
-		e.setCourse(CourseConverter.toEntity(d.getCourse()));
+		if(d.getCourse() != null)
+			e.setCourse(CourseConverter.toEntity(d.getCourse()));
 		return e;
 	}
 	

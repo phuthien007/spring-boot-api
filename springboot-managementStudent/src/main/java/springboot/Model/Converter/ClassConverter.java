@@ -7,25 +7,29 @@ public class ClassConverter {
 
 	public static ClassDTO toDTO( ClassEntity e ) {
 		ClassDTO d = new ClassDTO();
-		d.setCourse(CourseConverter.toDTO(e.getCourse()));
+		if(e.getCourse() != null)
+			d.setCourse(CourseConverter.toDTO(e.getCourse()));
 		d.setEndDate(e.getEndDate());
 		d.setId(e.getId());
 		d.setName(e.getName());
 		d.setStatus(e.getStatus());
 		d.setStartDate(e.getStartDate());
-		d.setTeacher(TeacherConverter.toDTO(e.getTeacher()));
+		if(e.getTeacher() != null)
+			d.setTeacher(TeacherConverter.toDTO(e.getTeacher()));
 		return d;
 	}
 	
 	public static ClassEntity toEntity( ClassDTO d ) {
 		ClassEntity e = new ClassEntity();
-		e.setCourse(CourseConverter.toEntity(d.getCourse()));
+		if(d.getCourse() != null)
+			e.setCourse(CourseConverter.toEntity(d.getCourse()));
 		e.setEndDate(d.getEndDate());
 		e.setId(d.getId());
 		e.setName(d.getName());
 		e.setStatus(d.getStatus());
 		e.setStartDate(d.getStartDate());
-		e.setTeacher(TeacherConverter.toEntity(d.getTeacher()));		
+		if(d.getTeacher() != null)
+			e.setTeacher(TeacherConverter.toEntity(d.getTeacher()));
 		return e;
 	}
 	

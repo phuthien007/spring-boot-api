@@ -12,8 +12,15 @@ import org.springframework.stereotype.Service;
 import springboot.Entity.TeacherEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
+import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.OperationQuery;
+import springboot.FilterSpecification.Specification.TeacherSpecification;
 import springboot.Repository.TeacherRepository;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -30,15 +37,20 @@ public class TeacherService {
     }
 
     // tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
-    public Page<TeacherEntity> getAll(Pageable pageable, Map<String, String> keyword) {
-//        TeacherSpecification teacherSpec = new TeacherSpecification();
-//        for (String input : keyword.keySet()) {
-//            System.out.println(input + " = " + keyword.get(input));
-//            teacherSpec.add(new FilterInput(input, keyword.get(input), OperationQuery.LIKE));
-//        }
+    public Page<TeacherEntity> getAll(Pageable pageable, Map<String, String> keyword, List<String> sort)
+    {
+        TeacherSpecification teacherSpec = new TeacherSpecification();
+        for (String input : keyword.keySet()) {
+            teacherSpec.add(new FilterInput(input, keyword.get(input), OperationQuery.LIKE));
+        }
+        System.out.println("before sort");
+
+        for (String input : sort) {
+            System.out.println("Middle sort");
+            teacherSpec.add(input);
+        }
 //		teacherSpec.add(new FilterInput("fullname", keyword.get("fullname"), OperationQuery.EQUALS));
-//        return teacherRep.findAll(teacherSpec, pageable);
-        return null;
+        return teacherRep.findAll(teacherSpec, pageable);
     }
 
     // tìm kiếm theo id

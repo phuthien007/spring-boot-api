@@ -102,9 +102,9 @@ public abstract class GenericSpecification<T> implements Specification<T> {
                                         root.get(input.getField()).getJavaType(),
                                         keyword)));
                         break;
-    //                case GREATER_THAN_EQUAL:
-    //                    predicates.add( criteriaBuilder.gte(root.get(input.getField()), input.getValue()) );
-    //                    break;
+                    //                case GREATER_THAN_EQUAL:
+                    //                    predicates.add( criteriaBuilder.gte(root.get(input.getField()), input.getValue()) );
+                    //                    break;
                     case LESS_THAN:
                         System.out.println("OPERATION LESS_THAN " + input.getField() + " = " + keyword);
                         predicates.add(criteriaBuilder.lt(root.get(input.getField()),
@@ -112,9 +112,9 @@ public abstract class GenericSpecification<T> implements Specification<T> {
                                         root.get(input.getField()).getJavaType(),
                                         keyword)));
                         break;
-    //                case LESS_THAN_EQUAL:
-    //                    predicates.add( criteriaBuilder.lessThanOrEqualTo(root.get(input.getField()), input.getValue()) );
-    //                    break;
+                    //                case LESS_THAN_EQUAL:
+                    //                    predicates.add( criteriaBuilder.lessThanOrEqualTo(root.get(input.getField()), input.getValue()) );
+                    //                    break;
                 }
         }
         if (!orders.isEmpty())

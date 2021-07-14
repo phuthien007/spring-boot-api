@@ -1,6 +1,7 @@
 package springboot.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class ExamResultService {
 	}
 
 //	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
-	public Page<ExamResultEntity> getAll(Pageable pageable, Map<String, String> keyword) {
+	public Page<ExamResultEntity> getAll(Pageable pageable, Map<String, String> keyword, List<String> sort) {
 //		try {
 //			Long id = Long.parseLong(keyword);
 //			StudentEntity student = studentRep.findById(id).get();
@@ -60,6 +61,10 @@ public class ExamResultService {
 		ExamResultSpecification examResultSpec = new ExamResultSpecification();
 		for(String key : keyword.keySet()){
 			examResultSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
+		}
+		for(String item : sort) {
+			System.out.println(item);
+			examResultSpec.add(item);
 		}
 		return examResultRep.findAll(examResultSpec, pageable);
 	}

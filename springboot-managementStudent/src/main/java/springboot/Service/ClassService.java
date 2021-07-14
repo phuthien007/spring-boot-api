@@ -21,6 +21,7 @@ import springboot.Repository.ClassRepository;
 import springboot.Repository.CourseRepository;
 import springboot.Repository.TeacherRepository;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -44,7 +45,7 @@ public class ClassService {
 
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "classes")
-	public Page<ClassEntity> getAll(Pageable pageable, Map<String, String> keyword) {
+	public Page<ClassEntity> getAll(Pageable pageable, Map<String, Map<String, Object>> keyword, List<String> sort) {
 //		try {
 //			Long id = Long.parseLong(keyword);
 //			CourseEntity course = courseRep.findById(id).get();
@@ -58,8 +59,18 @@ public class ClassService {
 //
 //		}
 		ClassSpecification classSpec = new ClassSpecification();
-		for(String key : keyword.keySet()){
-			classSpec.add( new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
+		// using filter generic 2
+		for(String operation : keyword.keySet()){
+			System.out.println("querying" + operation);
+			for(String key : keyword.get(operation).keySet()){
+//				System.out.println("operation " + operation + " " + keyword.get(operation).get(key));
+//				System.out.println(key + " query " +keyword.get(key) );
+				classSpec.add( new FilterInput(key, keyword.get(operation).get(key) , operation.trim()));
+//				/System.out.println("done " + key);
+			}
+		}
+		for(String item : sort){
+			classSpec.add(item);
 		}
 		return classRep.findAll(classSpec, pageable);
 	}

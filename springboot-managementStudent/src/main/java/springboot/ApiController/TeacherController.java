@@ -50,15 +50,23 @@ public class TeacherController {
             @RequestParam(name = "email", required = false) String email,
             @RequestParam(name = "phone", required = false) String phone,
             @RequestParam(name = "address", required = false) String address,
-            @RequestParam(name = "grade", required = false) String grade) {
+            @RequestParam(name = "grade", required = false) String grade,
+            @RequestParam(name = "sort", required = false, defaultValue = "id|asc") List<String> sort
+    ) {
+        System.out.println("Start sorting");
+
         Map<String, String> keyword = new HashMap<>();
         if (fullname != null) keyword.put("fullname", fullname);
         if (email != null) keyword.put("email", email);
         if (phone != null) keyword.put("phone", phone);
         if (address != null) keyword.put("address", address);
         if (grade != null) keyword.put("grade", grade);
+        System.out.println("step1");
         Page<TeacherEntity> teachers = teacherSer.getAll(PageRequest.of(page, 20));
-        teachers = teacherSer.getAll(PageRequest.of(page, 20), keyword);
+        System.out.println("gia tri sort co bang null: " + sort.isEmpty());
+
+        if(!keyword.isEmpty() || sort.size() >0)
+            teachers = teacherSer.getAll(PageRequest.of(page, 20), keyword, sort);
 //			.stream().map(student -> StudentConverter.toDTO(student)).collect(Collectors.toList());
 //				.stream().map(student -> StudentConverter.toDTO(student)).collect(Collectors.toList());
         HttpHeaders headers = new HttpHeaders();
@@ -66,7 +74,8 @@ public class TeacherController {
         headers.add("page", String.valueOf(teachers.getNumber()));
         headers.add("elementOfPages", String.valueOf(teachers.getNumberOfElements()));
         headers.add("numberOfPages", String.valueOf(teachers.getTotalPages()));
-//		Log.info("IN getAllusers : size : {}",teachers.getTotalElements()  );	
+//		Log.info("IN getAllusers : size : {}",teachers.getTotalElements()  );
+        System.out.println("done");
         return ResponseEntity.ok().headers(headers).body(
                 teachers.toList().stream().map(teacher -> TeacherConverter.toDTO(teacher)).collect(Collectors.toList()));
     }

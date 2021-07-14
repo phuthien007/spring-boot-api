@@ -1,6 +1,7 @@
 package springboot.Model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -12,10 +13,10 @@ public class ClassDTO {
 
 	private String name;
 
-	@JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "yyyy-MM-dd@HH:mm:ss.SSSZ", shape = JsonFormat.Shape.STRING)
+	@JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "yyyy-MM-dd@HH:mm:ss.SSSX" , shape = JsonFormat.Shape.STRING)
 	private Date startDate;
 
-	@JsonFormat( pattern = "yyyy-MM-dd@HH:mm:ss.SSSZ", shape = JsonFormat.Shape.STRING)
+	@JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "yyyy-MM-dd@HH:mm:ss.SSSX" , shape = JsonFormat.Shape.STRING)
 	private Date endDate;
 
 	private CourseDTO course;

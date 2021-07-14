@@ -2,6 +2,7 @@ package springboot.ApiController;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -41,19 +42,31 @@ public class ExamResultController {
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
 	public ResponseEntity<?> getAllexamResults(
 			// pageable
-			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
-			// filter params
-			@RequestParam(name = "score",  required = false) Long score,
-			@RequestParam(name = "resultDate", required = false) Date resultDate,
-			@RequestParam(name = "note",required = false) String note) {
+			@RequestParam(name = "page", defaultValue = "0", required = false) int page
+			) {
+/*
+// filter params
+			@RequestParam(name = "Equal Score",  required = false) Long scoreEqual,
+			@RequestParam(name = "Greater Than Score",  required = false) Long scoreGreater,
+			@RequestParam(name = "Less Than Score",  required = false) Long scoreLess,
 
+			@RequestParam(name = "Equal resultDate", required = false) Date resultDateEqual,
+			@RequestParam(name = "Greater Than resultDate", required = false) Date resultDateGreater,
+			@RequestParam(name = "Less Than resultDate", required = false) Date resultDateLess,
+
+			@RequestParam(name = "Equal Note ",required = false) String noteEqual,
+			@RequestParam(name = "Not Equal Note",required = false) String noteNotEqual,
+			@RequestParam(name = "Like Note",required = false) String noteLike,
+			// sorting
+			@RequestParam(name = "sort", required = false) List<String> sort
+* */
 		Page<ExamResultEntity> examResults =examResultSer.getAll(PageRequest.of(page, 20));
-		Map<String, String > keyword = new HashMap<>();
-		if(score != null) keyword.put("score", String.valueOf(score));
-		if(resultDate != null) keyword.put("resultDate", resultDate.toString());
-		if(note != null ) keyword.put("note", note);
-		if( !keyword.isEmpty())
-			examResultSer.getAll(PageRequest.of(page, 20), keyword);
+//		Map<String, String > keyword = new HashMap<>();
+//		if(score != null) keyword.put("score", String.valueOf(score));
+//		if(resultDate != null) keyword.put("resultDate", resultDate.toString());
+//		if(note != null ) keyword.put("note", note);
+//		if( !keyword.isEmpty() || sort != null)
+//			examResultSer.getAll(PageRequest.of(page, 20), keyword, sort);
 //		if (keyword != null) {
 //////			System.out.println("thuc hien 1");
 //			examResults = examResultSer.getAll(PageRequest.of(page, 20), keyword);

@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import springboot.Entity.RoleEntity;
 import springboot.Exception.BadRequestException;
-import springboot.Model.Converter.RoleConverter;
 import springboot.Model.DTO.RoleDTO;
+import springboot.Model.Mapper.RoleMapper;
 import springboot.Repository.RoleRepository;
 
 @RestController
@@ -35,9 +36,13 @@ public class RoleController {
 	@Autowired
 	RoleRepository roleRep;
 
+	@Autowired
+	private RoleMapper RoleConverter;
+
 	// lấy tất cả các bản ghi
 	@GetMapping("public/role")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
+	@Transactional(timeout = 1000, rollbackFor = BadRequestException.class)
 	public ResponseEntity<?> getAllroles(@RequestParam(name = "page", defaultValue = "0", required = false) int page) {
 		Page<RoleEntity> roles =roleRep.findAll(PageRequest.of(page, 20));
 		HttpHeaders headers = new HttpHeaders();

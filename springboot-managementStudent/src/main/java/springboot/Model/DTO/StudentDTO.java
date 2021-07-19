@@ -3,7 +3,7 @@ package springboot.Model.DTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Date;
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+//@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class StudentDTO {
 	private Long id;
 	private String fullname;

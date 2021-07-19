@@ -2,15 +2,21 @@ package springboot.ApiController;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import springboot.Entity.CourseEntity;
 import springboot.Exception.BadRequestException;
-import springboot.Model.Converter.CourseConverter;
 import springboot.Model.DTO.CourseDTO;
+import springboot.Model.Mapper.CourseMapper;
 import springboot.Service.CourseService;
 
 @RestController
@@ -36,25 +42,34 @@ public class CourseController {
 	@Autowired
 	private CourseService courseSer;
 
+	@Autowired
+	private CourseMapper CourseConverter;
+
+	private static final Logger log = LogManager.getLogger(TeacherController.class);
+
+
 	// lấy tất cả các bản ghi
 	@GetMapping("public/course")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
+	@Transactional(timeout = 1000, rollbackFor = BadRequestException.class)
 	public ResponseEntity<?> getAllcourses(
 			// Pageable
 			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
 			// filter data
 			@RequestParam(name="name",required = false) String name,
 			@RequestParam(name="createDate", required = false) Date createDate,
-			@RequestParam(name = "type", required = false) String type) {
-		Page<CourseEntity> courses =courseSer.getAll(PageRequest.of(page, 20));
+			@RequestParam(name = "type", required = false) String type,
+			@RequestParam(name="sort", required = false, defaultValue = "id|asc") List<String> sorting) {
+		Page<CourseEntity> courses = null;
 		Map<String, String> keyword = new HashMap<>();
 		if(name!=null) keyword.put("name",name);
 		if(createDate != null) keyword.put("createDate",createDate.toString());
 		if(type != null) keyword.put("type",type);
 		if (!keyword.isEmpty())
-			courses = courseSer.getAll(PageRequest.of(page, 20), keyword);
+			courses = courseSer.getAll(PageRequest.of(page, 20, Sort.by(UtilController.listSort(sorting))), keyword);
 //			.stream().map(course -> CourseConverter.toDTO(course)).collect(Collectors.toList());
 //				.stream().map(course -> CourseConverter.toDTO(course)).collect(Collectors.toList());
+		else courses =courseSer.getAll(PageRequest.of(page, 20, Sort.by(UtilController.listSort(sorting))));
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("totalElements", String.valueOf(courses.getTotalElements()));
 		headers.add("page", String.valueOf(courses.getNumber()));
@@ -91,6 +106,7 @@ public class CourseController {
 			return CourseConverter.toDTO(courseSer.updatecourse(CourseConverter.toEntity(course)));
 		} catch (Exception e) {
 			// TODO: handle exception
+			log.error("[ IN UPDATE COURSE] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
 			throw new BadRequestException("Value id is missing");
 		}
 		

@@ -1,158 +1,92 @@
 package springboot.Model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 
 import java.util.Date;
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+//@JsonInclude(value = JsonInclude.Include.NON_NULL)
+
 public class ExamResultDTO {
 	private Long id;
 	
-	private StudentDTO student;
+	private Long studentId;
 	
-	private ExamDTO exam;
+	private Long examId;
 	
 	private Long score;
 	
 	private Date resultDate;
 	
-	private ClassDTO classes;
+	private Long classId;
 	
 	private String note;
 
-	/**
-	 * @return the id
-	 */
+	public ExamResultDTO() {
+	}
+
+	public ExamResultDTO(Long id, Long studentId, Long examId, Long score, Date resultDate, Long classId, String note) {
+		this.id = id;
+		this.studentId = studentId;
+		this.examId = examId;
+		this.score = score;
+		this.resultDate = resultDate;
+		this.classId = classId;
+		this.note = note;
+	}
+
 	public Long getId() {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the student
-	 */
-	public StudentDTO getStudent() {
-		return student;
+	public Long getStudentId() {
+		return studentId;
 	}
 
-	/**
-	 * @param student the student to set
-	 */
-	public void setStudent(StudentDTO student) {
-		this.student = student;
+	public void setStudentId(Long studentId) {
+		this.studentId = studentId;
 	}
 
-	/**
-	 * @return the exam
-	 */
-	public ExamDTO getExam() {
-		return exam;
+	public Long getExamId() {
+		return examId;
 	}
 
-	/**
-	 * @param exam the exam to set
-	 */
-	public void setExam(ExamDTO exam) {
-		this.exam = exam;
+	public void setExamId(Long examId) {
+		this.examId = examId;
 	}
 
-	/**
-	 * @return the score
-	 */
 	public Long getScore() {
 		return score;
 	}
 
-	/**
-	 * @param score the score to set
-	 */
 	public void setScore(Long score) {
 		this.score = score;
 	}
 
-	/**
-	 * @return the resultDate
-	 */
 	public Date getResultDate() {
 		return resultDate;
 	}
 
-	/**
-	 * @param resultDate the resultDate to set
-	 */
 	public void setResultDate(Date resultDate) {
 		this.resultDate = resultDate;
 	}
 
-	/**
-	 * @return the classes
-	 */
-	public ClassDTO getClasses() {
-		return classes;
+	public Long getClassId() {
+		return classId;
 	}
 
-	/**
-	 * @param classes the classes to set
-	 */
-	public void setClasses(ClassDTO classes) {
-		this.classes = classes;
+	public void setClassId(Long classId) {
+		this.classId = classId;
 	}
 
-	/**
-	 * @return the note
-	 */
 	public String getNote() {
 		return note;
 	}
 
-	/**
-	 * @param note the note to set
-	 */
 	public void setNote(String note) {
 		this.note = note;
 	}
-
-	/**
-	 * @param id
-	 * @param student
-	 * @param exam
-	 * @param score
-	 * @param resultDate
-	 * @param classes
-	 * @param note
-	 */
-	public ExamResultDTO(Long id, StudentDTO student, ExamDTO exam, Long score, Date resultDate, ClassDTO classes,
-			String note) {
-		super();
-		this.id = id;
-		this.student = student;
-		this.exam = exam;
-		this.score = score;
-		this.resultDate = resultDate;
-		this.classes = classes;
-		this.note = note;
-	}
-
-	/**
-	 * 
-	 */
-	public ExamResultDTO() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	public String toString() {
-		return "ExamResultDTO [id=" + id + ", student=" + student.getId() + ", exam=" + exam.getId() + ", score=" + score
-				+ ", resultDate=" + resultDate + ", classes=" + classes.getId() + ", note=" + note + "]";
-	}
-
-	
-
-	
 }

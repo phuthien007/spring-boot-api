@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 
-public abstract class GenericSpecification<T> implements Specification<T> {
+public class GenericSpecification<T> implements Specification<T> {
 
     private List<FilterInput> filters;
 

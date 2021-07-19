@@ -39,7 +39,7 @@ public class TeacherEntity {
 	private String grade;
 	
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "teacher")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher")
 	private Set<ClassEntity> c = new HashSet<ClassEntity>();
 
 	/**

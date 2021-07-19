@@ -115,12 +115,12 @@ public class CourseEntity {
 	}
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "course")
 	@Cascade(CascadeType.ALL)
 	private Set<ExamEntity> exam = new HashSet<ExamEntity>();
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "course")
 	@Cascade(CascadeType.ALL)
 	private Set<PlanEntity> plan = new HashSet<>();
 

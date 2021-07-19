@@ -47,7 +47,7 @@ public class RoleEntity {
 	private String description;
 		
 	@JsonIgnore
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany( cascade = CascadeType.ALL)
 	@JoinTable(name="authorization_each_role",
 			joinColumns = @JoinColumn(name="role_id"),
 			inverseJoinColumns = @JoinColumn(name="per_id")
@@ -55,7 +55,7 @@ public class RoleEntity {
 	private Set<PermistionEntity> permistion = new HashSet<PermistionEntity>();
 
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,mappedBy = "role")
+	@OneToMany( cascade = CascadeType.ALL,mappedBy = "role")
 	private Set<UserEntity> user = new HashSet<UserEntity>();
 	
 //	@JsonIgnore

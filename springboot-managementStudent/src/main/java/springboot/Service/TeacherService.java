@@ -1,5 +1,8 @@
 package springboot.Service;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -9,22 +12,26 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import springboot.ApiController.TeacherController;
 import springboot.Entity.TeacherEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.GenericSpecification2;
 import springboot.FilterSpecification.OperationQuery;
-import springboot.FilterSpecification.Specification.TeacherSpecification;
 import springboot.Repository.TeacherRepository;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class TeacherService {
+
+    private static final Logger log = LogManager.getLogger(TeacherController.class);
 
     @Autowired
     private TeacherRepository teacherRep;
@@ -37,18 +44,13 @@ public class TeacherService {
     }
 
     // tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
-    public Page<TeacherEntity> getAll(Pageable pageable, Map<String, String> keyword, List<String> sort)
+    public Page<TeacherEntity> getAll(Pageable pageable, Map<String, String> keyword)
     {
-        TeacherSpecification teacherSpec = new TeacherSpecification();
+        GenericSpecification2<TeacherEntity> teacherSpec = new GenericSpecification2<>();
         for (String input : keyword.keySet()) {
             teacherSpec.add(new FilterInput(input, keyword.get(input), OperationQuery.LIKE));
         }
         System.out.println("before sort");
-
-        for (String input : sort) {
-            System.out.println("Middle sort");
-            teacherSpec.add(input);
-        }
 //		teacherSpec.add(new FilterInput("fullname", keyword.get("fullname"), OperationQuery.EQUALS));
         return teacherRep.findAll(teacherSpec, pageable);
     }
@@ -91,6 +93,8 @@ public class TeacherService {
             return teacherRep.save(t);
         } catch (Exception e) {
             // TODO: handle exception
+            log.error("[ IN SERVICE UPDATE A TEACHER] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
             throw new BadRequestException(e.getMessage());
         }
 
@@ -105,6 +109,8 @@ public class TeacherService {
             teacherRep.delete(t);
             return true;
         } catch (Exception e) {
+            log.error("[ IN SERVICE DELETE A TEACHER] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
             // TODO: handle exception
             throw new BadRequestException("Some thing went wrong!. You cant do it!!!");
         }

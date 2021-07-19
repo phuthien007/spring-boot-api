@@ -1,11 +1,11 @@
 package springboot.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.sql.Time;
+import java.util.Date;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -13,24 +13,25 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import springboot.ApiController.TeacherController;
 import springboot.Entity.RoleEntity;
 import springboot.Entity.UserEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.Repository.RoleRepository;
 import springboot.Repository.UserRepository;
-import springboot.security.UserDetailsImpl;
+import springboot.Config.Security.UserDetailsImpl;
 
 @Service
 public class UserService implements UserDetailsService  {
+
+	private static final Logger log = LogManager.getLogger(TeacherController.class);
 
 	@Autowired
 	private UserRepository userRep;
@@ -38,8 +39,7 @@ public class UserService implements UserDetailsService  {
 	@Autowired
 	private RoleRepository roleRep;
 	
-	@Autowired
-	private JavaMailSender mailSender;
+
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -90,23 +90,7 @@ public class UserService implements UserDetailsService  {
 	
 	
 	
-	// send email
-	public  void sendEmail(StringBuffer path ,String email, String token) throws UnsupportedEncodingException, MessagingException {
-		MimeMessage msg =  mailSender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(msg);
-		helper.setFrom("phailamsaonana@gmail.com", "Tran Thien Phu");
-		helper.setTo(email);
-		String subject = "Here's enter this token ";
-		String content = " <p> Hello , </p> "
-				+ "<p>You have requested to reset your password.</p>" 
-				+ "<p>Here's token you must send to server: </p>"
-				+ "<p><b>"+ path + "/" + token + "</b></p>"
-				+ "Ignore this email if you do remember your password, or you have not made request!";
-		helper.setSubject(subject);
-		helper.setText(content, true);
-		mailSender.send(msg);
-	}
-	
+
 //	@Override
 //	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 //		// TODO Auto-generated method stub
@@ -154,6 +138,8 @@ public class UserService implements UserDetailsService  {
 			return userRep.save(user);
 		} catch (Exception e) {
 			// TODO: handle exception
+			log.error("[ IN SERVICE ADD A USER] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			throw new BadRequestException("errorpost " + e.getLocalizedMessage());
 		}
 		
@@ -183,6 +169,8 @@ public class UserService implements UserDetailsService  {
 			return userRep.save(t);
 
 		} catch (Exception e) {
+			log.error("[ IN SERVICE UPDATE A USER] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			// TODO: handle exception
 			throw new BadRequestException("errorput" + e.getMessage());
 		}
@@ -197,10 +185,10 @@ public class UserService implements UserDetailsService  {
 			userRep.delete(t);
 			return true;
 		} catch (Exception e) {
+			log.error("[ IN SERVICE DELETE A USER] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			// TODO: handle exception
 			throw new BadRequestException("Some thing went wrong!. You cant do it!!!");
 		}
 	}
-
-	
 }

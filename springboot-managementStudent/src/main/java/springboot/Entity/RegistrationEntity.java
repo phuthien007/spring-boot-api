@@ -26,13 +26,13 @@ public class RegistrationEntity {
 	@EmbeddedId
 	private ClassStudentIdKey id = new ClassStudentIdKey();
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@MapsId("classId")
 	@JoinColumn(name = "class_id", referencedColumnName = "id")
 	private ClassEntity c;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@MapsId("studentId")
 	@JoinColumn(name = "student_id", referencedColumnName = "id")

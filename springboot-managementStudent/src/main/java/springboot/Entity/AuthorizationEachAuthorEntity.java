@@ -23,12 +23,12 @@ public class AuthorizationEachAuthorEntity {
 	@EmbeddedId
 	private PermistionUserIdKey id;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@MapsId("permistionId")
 	@JoinColumn(name = "per_id", referencedColumnName = "id")
 	private PermistionEntity permistion;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne( cascade = CascadeType.ALL)
 	@MapsId("userId")
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private UserEntity user;

@@ -2,15 +2,21 @@ package springboot.ApiController;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import springboot.Entity.StudentEntity;
 import springboot.Exception.BadRequestException;
-import springboot.Model.Converter.StudentConverter;
 import springboot.Model.DTO.StudentDTO;
+import springboot.Model.Mapper.StudentMapper;
 import springboot.Service.StudentService;
 
 @RestController
@@ -36,9 +42,16 @@ public class StudentController {
     @Autowired
     private StudentService studentSer;
 
+    @Autowired
+    private StudentMapper StudentConverter;
+
+    private static final Logger log = LogManager.getLogger(TeacherController.class);
+
+
     // lấy tất cả các bản ghi
     @GetMapping("public/student")
     @ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
+    @Transactional(timeout = 1000, rollbackFor = BadRequestException.class)
     public ResponseEntity<?> getAllstudents(
             // pageable
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
@@ -50,21 +63,28 @@ public class StudentController {
             @RequestParam(name = "birthday", required = false) Date birthday,
             @RequestParam(name = "note", required = false) String note,
             @RequestParam(name = "facebook", required = false) String facebook,
-            @RequestParam(name = "createDate", required = false) Date createDate) {
-        Page<StudentEntity> students = studentSer.getAll(PageRequest.of(page, 20));
+            @RequestParam(name = "createDate", required = false) Date createDate,
+            // sort
+            @RequestParam(name = "sort", required = false, defaultValue = "id|asc") List<String> sorting
+    ) {
+        Page<StudentEntity> students = null;
         Map<String, String> keyword = new HashMap<>();
         if (fullname != null) keyword.put("fullname", fullname);
-        if(address != null) keyword.put("address", address);
+        if (address != null) keyword.put("address", address);
         if (email != null) keyword.put("email", email);
-        if(phone != null) keyword.put("phone", phone);
+        if (phone != null) keyword.put("phone", phone);
 //        if (birthday != null) keyword.put("birthday", birthday);
-        if(note != null) keyword.put("note", note);
+        if (note != null) keyword.put("note", note);
         if (facebook != null) keyword.put("facebook", facebook);
 //        if(createDate != null) keyword.put("createDate", createDate);
+
+        // sort
+
         if (!keyword.isEmpty())
-            students = studentSer.getAll(PageRequest.of(page, 20), keyword);
+            students = studentSer.getAll(PageRequest.of(page, 20, Sort.by(UtilController.listSort(sorting))), keyword);
 //			.stream().map(student -> StudentConverter.toDTO(student)).collect(Collectors.toList());
 //				.stream().map(student -> StudentConverter.toDTO(student)).collect(Collectors.toList());
+        else students = studentSer.getAll(PageRequest.of(page, 20, Sort.by(UtilController.listSort(sorting))));
         HttpHeaders headers = new HttpHeaders();
         headers.add("totalElements", String.valueOf(students.getTotalElements()));
         headers.add("page", String.valueOf(students.getNumber()));
@@ -93,6 +113,8 @@ public class StudentController {
             return StudentConverter.toDTO(studentSer.addStudent(t));
         } catch (Exception e) {
             // TODO: handle exception
+            log.error("[ IN ADD A NEW STUDENT] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
             throw new BadRequestException("Something went wrong");
         }
 
@@ -108,6 +130,8 @@ public class StudentController {
 
         } catch (Exception e) {
             // TODO: handle exception
+            log.error("[ IN UPDATE A  STUDENT] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
             throw new BadRequestException(e.getMessage());
         }
     }

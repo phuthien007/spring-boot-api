@@ -6,125 +6,81 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Date;
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClassDTO {
 
 	private Long id;
 
 	private String name;
 
-	@JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "yyyy-MM-dd@HH:mm:ss.SSSX" , shape = JsonFormat.Shape.STRING)
+//	@JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "yyyy-MM-dd@HH:mm:ss.SSSX" , shape = JsonFormat.Shape.STRING)
 	private Date startDate;
 
-	@JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "yyyy-MM-dd@HH:mm:ss.SSSX" , shape = JsonFormat.Shape.STRING)
+//	@JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "yyyy-MM-dd@HH:mm:ss.SSSX" , shape = JsonFormat.Shape.STRING)
 	private Date endDate;
 
-	private CourseDTO course;
+	private Long courseId;
 
-	private TeacherDTO teacher;
+	private Long teacherId;
 
-	/**
-	 * @return the id
-	 */
+	public ClassDTO() {
+
+	}
+
+	public ClassDTO(Long id, String name, Date startDate, Date endDate, Long courseId, Long teacherId) {
+		this.id = id;
+		this.name = name;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.courseId = courseId;
+		this.teacherId = teacherId;
+	}
+
 	public Long getId() {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the name
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @param name the name to set
-	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * @return the startDate
-	 */
 	public Date getStartDate() {
 		return startDate;
 	}
 
-	/**
-	 * @param startDate the startDate to set
-	 */
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
-	/**
-	 * @return the endDate
-	 */
 	public Date getEndDate() {
 		return endDate;
 	}
 
-	/**
-	 * @param endDate the endDate to set
-	 */
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 
-	/**
-	 * @return the course
-	 */
-	public CourseDTO getCourse() {
-		return course;
+	public Long getCourseId() {
+		return courseId;
 	}
 
-	/**
-	 * @param course the course to set
-	 */
-	public void setCourse(CourseDTO course) {
-		this.course = course;
+	public void setCourseId(Long courseId) {
+		this.courseId = courseId;
 	}
 
-	/**
-	 * @return the teacher
-	 */
-	public TeacherDTO getTeacher() {
-		return teacher;
+	public Long getTeacherId() {
+		return teacherId;
 	}
 
-	/**
-	 * @param teacher the teacher to set
-	 */
-	public void setTeacher(TeacherDTO teacher) {
-		this.teacher = teacher;
+	public void setTeacherId(Long teacherId) {
+		this.teacherId = teacherId;
 	}
-
-	/**
-	 * @return the status
-	 */
-	public String getStatus() {
-		return status;
-	}
-
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	private String status;
-
-	public ClassDTO() {
-		// TODO Auto-generated constructor stub
-	}
-
 }

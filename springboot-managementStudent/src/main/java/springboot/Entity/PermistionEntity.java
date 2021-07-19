@@ -30,11 +30,11 @@ public class PermistionEntity {
 	private String description;
 
 	@JsonIgnore
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "permistion")
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "permistion")
 	private Set<UserEntity> user = new HashSet<UserEntity>();
 
 	@JsonIgnore
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "permistion")
+	@ManyToMany( cascade = CascadeType.ALL, mappedBy = "permistion")
 	private Set<RoleEntity> role = new HashSet<RoleEntity>();
 
 //	@JsonIgnore

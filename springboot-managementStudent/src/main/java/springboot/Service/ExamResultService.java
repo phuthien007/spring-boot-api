@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import springboot.ApiController.TeacherController;
 import springboot.Entity.ClassEntity;
 import springboot.Entity.ExamEntity;
 import springboot.Entity.ExamResultEntity;
@@ -20,8 +24,9 @@ import springboot.Entity.StudentEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.GenericSpecification;
+import springboot.FilterSpecification.GenericSpecification2;
 import springboot.FilterSpecification.OperationQuery;
-import springboot.FilterSpecification.Specification.ExamResultSpecification;
 import springboot.Repository.ClassRepository;
 import springboot.Repository.ExamRepository;
 import springboot.Repository.ExamResultRepository;
@@ -38,6 +43,9 @@ public class ExamResultService {
 	private ExamRepository examRep;
 	@Autowired
 	private ClassRepository classRep;
+
+	private static final Logger log = LogManager.getLogger(TeacherController.class);
+
 
 	// tìm tất cả bản ghi có phân trang
 	@Cacheable("ExamResults")
@@ -58,7 +66,7 @@ public class ExamResultService {
 //			// TODO: handle exception
 //			throw new BadRequestException(e.getLocalizedMessage());
 //		}
-		ExamResultSpecification examResultSpec = new ExamResultSpecification();
+		GenericSpecification2<ExamResultEntity> examResultSpec = new GenericSpecification2<>();
 		for(String key : keyword.keySet()){
 			examResultSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}
@@ -137,6 +145,8 @@ public class ExamResultService {
 			examResultRep.delete(t);
 			return true;
 		} catch (Exception e) {
+			log.error("[ IN SERVICE DELETE A EXAM RESULT] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			// TODO: handle exception
 			throw new BadRequestException("Some thing went wrong!. You cant do it!!!");
 		}

@@ -6,12 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import springboot.Entity.ExamResultEntity;
 import springboot.Exception.BadRequestException;
-import springboot.Model.Converter.ExamResultConverter;
 import springboot.Model.DTO.ExamResultDTO;
+import springboot.Model.Mapper.ExamResultMapper;
 import springboot.Service.ExamResultService;
 
 @RestController
@@ -37,12 +42,19 @@ public class ExamResultController {
 	@Autowired
 	private ExamResultService examResultSer;
 
+	@Autowired
+	private ExamResultMapper ExamResultConverter;
+
+	private static final Logger log = LogManager.getLogger(TeacherController.class);
+
 	// lấy tất cả các bản ghi
 	@GetMapping("public/examResult")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
+	@Transactional(timeout = 1000, rollbackFor = BadRequestException.class)
 	public ResponseEntity<?> getAllexamResults(
 			// pageable
-			@RequestParam(name = "page", defaultValue = "0", required = false) int page
+			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+			@RequestParam(name="sort", required = false, defaultValue = "id|asc")List<String> sorting
 			) {
 /*
 // filter params
@@ -60,7 +72,7 @@ public class ExamResultController {
 			// sorting
 			@RequestParam(name = "sort", required = false) List<String> sort
 * */
-		Page<ExamResultEntity> examResults =examResultSer.getAll(PageRequest.of(page, 20));
+		Page<ExamResultEntity> examResults =examResultSer.getAll(PageRequest.of(page, 20, Sort.by(UtilController.listSort(sorting))));
 //		Map<String, String > keyword = new HashMap<>();
 //		if(score != null) keyword.put("score", String.valueOf(score));
 //		if(resultDate != null) keyword.put("resultDate", resultDate.toString());
@@ -101,14 +113,16 @@ public class ExamResultController {
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public ExamResultDTO addexamResult(@RequestBody @Validated ExamResultDTO examResult) {
 		try {
-			if (examResult.getScore() == null || examResult.getClasses().getId() == null 
-				|| examResult.getExam().getId() == null || examResult.getStudent().getId() == null)
+			if (examResult.getScore() == null || examResult.getClassId() == null
+				|| examResult.getExamId() == null || examResult.getStudentId() == null)
 				throw new BadRequestException("Value is missing");
 			ExamResultEntity t = ExamResultConverter.toEntity(examResult);
 			t.setId(null);
 			return ExamResultConverter.toDTO(examResultSer.addexamResult(t));
 		} catch (Exception e) {
 			// TODO: handle exception
+			log.error("[ IN ADD A NEW EXAM RESULT] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+			System.out.println("[ IN UPDATE A EXAM RESULT] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
 			throw new BadRequestException("Something went wrong!");
 		}
 		
@@ -124,6 +138,8 @@ public class ExamResultController {
 		
 		} catch (Exception e) {
 			// TODO: handle exception
+			log.error("[ IN UPDATE A EXAM RESULT] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+			System.out.println("[ IN UPDATE A EXAM RESULT] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
 			throw new BadRequestException("Value id is missing");
 		}
 	}

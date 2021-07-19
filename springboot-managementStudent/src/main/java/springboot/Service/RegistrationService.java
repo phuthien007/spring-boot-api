@@ -2,6 +2,9 @@ package springboot.Service;
 
 import java.util.Date;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import springboot.ApiController.TeacherController;
 import springboot.Entity.ClassEntity;
 import springboot.Entity.RegistrationEntity;
 import springboot.Entity.StudentEntity;
@@ -23,6 +27,7 @@ import springboot.Repository.StudentRepository;
 
 @Service
 public class RegistrationService {
+	private static final Logger log = LogManager.getLogger(TeacherController.class);
 
 	@Autowired
 	private RegistrationRepository registrationRep;
@@ -49,6 +54,8 @@ public class RegistrationService {
 
 		} catch (Exception e) {
 			// TODO: handle exc'erroreption
+			log.error("[ IN SERVICE GET ALL REGISTRATION] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 //			System.out.println("error "+e.getLocalizedMessage());
 			return registrationRep.findByStatusContaining(keyword, pageable);
 
@@ -91,6 +98,8 @@ public class RegistrationService {
 				t.setRegisterDay(registration.getRegisterDay());
 			return registrationRep.save(t);
 		} catch (Exception e) {
+			log.error("[ IN SERVICE UPDATE A REGISTRATION] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			// TODO: handle exception
 			throw new BadRequestException(e.getMessage());
 		}
@@ -105,6 +114,8 @@ public class RegistrationService {
 			registrationRep.delete(t);
 			return true;
 		} catch (Exception e) {
+			log.error("[ IN SERVICE DELETE A REGISTRATION] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			// TODO: handle exception
 			throw new BadRequestException("Some thing went wrong!. You cant do it!!!");
 		}

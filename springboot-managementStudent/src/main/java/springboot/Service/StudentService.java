@@ -3,6 +3,8 @@ package springboot.Service;
 import java.util.Date;
 import java.util.Map;
 
+import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -16,11 +18,12 @@ import springboot.Entity.StudentEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.GenericSpecification;
 import springboot.FilterSpecification.OperationQuery;
-import springboot.FilterSpecification.Specification.StudentSpecification;
 import springboot.Repository.StudentRepository;
 
 @Service
+@Log4j2
 public class StudentService {
 
 	@Autowired
@@ -37,7 +40,7 @@ public class StudentService {
 //		return studentRep
 //		.findByAddressContainingOrFullnameContainingOrEmailContainingOrPhoneContainingOrNoteContaining(
 //				keyword, keyword, keyword, keyword, keyword, pageable);
-		StudentSpecification studentSpec = new StudentSpecification();
+		GenericSpecification<StudentEntity> studentSpec = new GenericSpecification<>();
 		for( String key : keyword.keySet()){
 			studentSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}
@@ -87,6 +90,8 @@ public class StudentService {
 			return studentRep.save(t);
 		} catch (Exception e) {
 			// TODO: handle exception
+//			log.error("[ IN SERVICE UPDATE A STUDENT] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			throw new BadRequestException(e.getMessage());
 		}
 		
@@ -101,6 +106,8 @@ public class StudentService {
 			studentRep.delete(t);
 			return true;
 		} catch (Exception e) {
+//			log.error("[ IN SERVICE DELETE A STUDENT] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			// TODO: handle exception
 			throw new BadRequestException("Some thing went wrong!. You cant do it!!!");
 		}

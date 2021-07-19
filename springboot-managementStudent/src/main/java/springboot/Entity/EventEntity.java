@@ -28,7 +28,7 @@ public class EventEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@JoinColumn(name = "class_id", referencedColumnName = "id")
 	private ClassEntity c;

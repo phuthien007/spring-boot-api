@@ -12,6 +12,7 @@ import springboot.Entity.CourseEntity;
 public interface CourseRepository extends JpaRepository<CourseEntity, Long>,
 		JpaSpecificationExecutor<CourseEntity> {
 
+
 	public Page<CourseEntity> findByNameContainingOrTypeContaining(
 			String keyword1, String keyword2, Pageable pageable);
 	

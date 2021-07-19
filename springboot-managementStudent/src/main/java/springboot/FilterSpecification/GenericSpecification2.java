@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public abstract class GenericSpecification2<T> implements Specification<T> {
+public class GenericSpecification2<T> implements Specification<T> {
     private List<FilterInput> filters;
     private List<String> orderSorting;
 
@@ -60,49 +60,10 @@ public abstract class GenericSpecification2<T> implements Specification<T> {
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
-        List<Order> orders = new ArrayList<>();
         System.out.println("GenericSpecification 2");
         // separate data
-        for (String input : orderSorting) {
-            String value = null;
-            String keyword = null;
-//        if(value.startsWith("|") ){
-//            System.out.println("case 1");
-//            if( value.substring(1).equalsIgnoreCase("asc") ){
-//                System.out.println("Sort asc  " + root.get(input.getField()) );
-//                orders.add(criteriaBuilder.asc(root.get(input.getField())));
-//            }
-//            else if(value.substring(1).equalsIgnoreCase("desc")){
-//                System.out.println("Sort desc  " + root.get(input.getField()) );
-//                orders.add(criteriaBuilder.desc(root.get(input.getField())));
-//            }
-//        }
-            if (input.contains("|") == true) {
-                System.out.println("case 2 ");
-                value = input.substring(input.indexOf("|") + 1, input.length());
-                keyword = input.substring(0, input.indexOf("|"));
-//                System.out.println(value + " sort by " + keyword);
-                try {
-                    if (value.trim().equalsIgnoreCase("asc")) {
-//                        System.out.println("Sort asc  " + root.get(keyword.trim()));
-                        orders.add(criteriaBuilder.asc(root.get(keyword.trim())));
-                    } else if (value.trim().equalsIgnoreCase("desc")) {
-                        orders.add(criteriaBuilder.desc(root.get(keyword.trim())));
-//                        System.out.println("Sort desc  " + root.get(keyword.trim()));
-                    }
-                } catch (Exception e) {
-                    System.out.println("error input " + e.getMessage());
-                }
 
-            }
-//        else{
-//            System.out.println("case 3");
-//            keyword = value;
-//        }
-            // end separate data
-        }
-
-        System.out.println("start Filter " + filters.size());
+        System.out.println("start Filter has length" + filters.size());
         for (FilterInput input : filters) {
             // filter data by specification
             String operation;
@@ -157,11 +118,6 @@ public abstract class GenericSpecification2<T> implements Specification<T> {
                 //                    predicates.add( criteriaBuilder.lessThanOrEqualTo(root.get(input.getField()), input.getValue()) );
                 //                    break;
             }
-        }
-        if (!orders.isEmpty()) {
-
-            query.orderBy(orders);
-
         }
 //        query.orderBy( criteriaBuilder.asc(root.get("resultDate")) )
 //

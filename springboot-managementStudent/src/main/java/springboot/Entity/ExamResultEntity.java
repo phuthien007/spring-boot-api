@@ -25,12 +25,12 @@ public class ExamResultEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@JoinColumn(name="student_id", referencedColumnName = "id")
 	private StudentEntity student;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@JoinColumn(name="exam_id", referencedColumnName = "id")
 	private ExamEntity exam;
@@ -42,7 +42,7 @@ public class ExamResultEntity {
 	@Temporal(TemporalType.DATE)
 	private Date resultDate;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@JoinColumn(name="class_id", referencedColumnName = "id")
 	private ClassEntity c;

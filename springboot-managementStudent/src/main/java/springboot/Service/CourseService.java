@@ -3,6 +3,9 @@ package springboot.Service;
 import java.util.Date;
 import java.util.Map;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -12,16 +15,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import springboot.ApiController.TeacherController;
 import springboot.Entity.CourseEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.GenericSpecification;
 import springboot.FilterSpecification.OperationQuery;
-import springboot.FilterSpecification.Specification.CourseSpecification;
 import springboot.Repository.CourseRepository;
 
 @Service
 public class CourseService {
+
+	private static final Logger log = LogManager.getLogger(TeacherController.class);
 
 	@Autowired
 	private CourseRepository courseRep;
@@ -36,7 +42,7 @@ public class CourseService {
 	@Cacheable(value = "courses")
 	public Page<CourseEntity> getAll(Pageable pageable, Map<String, String> keyword) {
 
-		CourseSpecification courseSpec = new CourseSpecification();
+		GenericSpecification<CourseEntity> courseSpec = new GenericSpecification<>();
 		for( String key : keyword.keySet() ){
 			courseSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}
@@ -77,6 +83,8 @@ public class CourseService {
 
 		} catch (Exception e) {
 			// TODO: handle exception
+			log.error("[ IN SERVICE UPDATE A COURSE] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			throw new BadRequestException(e.getMessage());
 		}
 	}
@@ -90,6 +98,8 @@ public class CourseService {
 			courseRep.delete(t);
 			return true;
 		} catch (Exception e) {
+			log.error("[ IN SERVICE DELETE A COURSE] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			// TODO: handle exception
 			throw new BadRequestException("Some thing went wrong!. You cant do it!!!");
 		}

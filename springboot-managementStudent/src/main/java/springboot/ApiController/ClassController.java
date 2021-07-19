@@ -6,20 +6,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import springboot.Entity.ClassEntity;
 import springboot.Exception.BadRequestException;
-import springboot.Model.Converter.ClassConverter;
 import springboot.Model.DTO.ClassDTO;
+import springboot.Model.Mapper.ClassMapper;
 import springboot.Service.ClassService;
 
 @RestController
@@ -29,30 +34,38 @@ public class ClassController {
 	@Autowired
 	private ClassService clSer;
 
+	@Autowired
+	private ClassMapper ClassConverter;
+
+	private static final Logger log = LogManager.getLogger(TeacherController.class);
+
 	// lấy tất cả các bản ghi
 	@GetMapping("public/class")
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
-	@ResponseBody
+	@Transactional(timeout = 1000, rollbackFor = BadRequestException.class)
 	public ResponseEntity<?> getAllClass(
 			// pageable
 			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
 			// filter Params
-			@RequestParam(name = "equal name" ,required = false) String equalName,
-			@RequestParam(name = "like name" ,required = false) String likeName,
-			@RequestParam(name = "not equal name" ,required = false) String notEqualName,
+			@RequestParam(name = "equalName" ,required = false) String equalName,
+			@RequestParam(name = "likeName" ,required = false) String likeName,
+			@RequestParam(name = "notEqualName" ,required = false) String notEqualName,
 
-			@RequestParam(name = "equal startDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd@HH:mm:ss.SSSX") Date equalStartDate,
-			@RequestParam(name = "greater than startDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date greaterThanStartDate,
-			@RequestParam(name = "less than startDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lessThanStartDate,
+			@RequestParam(name = "equalStartDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd@HH:mm:ss.SSSX") Date equalStartDate,
+			@RequestParam(name = "greaterThanStartDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date greaterThanStartDate,
+			@RequestParam(name = "lessThanStartDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lessThanStartDate,
 
-			@RequestParam(name = "equal endDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd@HH:mm:ss.SSSX") Date equalEndDate,
-			@RequestParam(name = "greater than endDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date greaterThanEndDate,
-			@RequestParam(name = "less than endDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lessThanEndDate,
+			@RequestParam(name = "equalEndDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd@HH:mm:ss.SSSX") Date equalEndDate,
+			@RequestParam(name = "greaterThanEndDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date greaterThanEndDate,
+			@RequestParam(name = "lessThanEndDate" ,required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lessThanEndDate,
 
 			// sorting
-			@RequestParam(name = "sorting", required = false, defaultValue = "id|asc")List<String> sort
-			) {
-		Page<ClassEntity> clasess =clSer.getAll(PageRequest.of(page, 20));
+			@RequestParam(name = "sort", required = false, defaultValue = "id|asc")List<String> sorting
+
+	) {
+
+		System.out.println("equal name " + equalName);
+
 		Map<String, Object> greaterThan = new HashMap<>();
 		if(greaterThanStartDate != null) greaterThan.put("startDate", greaterThanStartDate);
 		if(greaterThanEndDate != null) greaterThan.put("endDate", greaterThanEndDate);
@@ -62,9 +75,7 @@ public class ClassController {
 		if(lessThanEndDate != null) lessThan.put("endDate", lessThanEndDate);
 
 		Map<String, Object> equal = new HashMap<>();
-		System.out.println("equal date: " + equalStartDate);
 		if(equalStartDate != null) equal.put("startDate", equalStartDate);
-		System.out.println(" addded	 equal date: " + equalStartDate);
 		if(equalEndDate != null) equal.put("endDate", equalEndDate);
 		if(equalName != null) equal.put("name", equalName);
 
@@ -84,10 +95,18 @@ public class ClassController {
 //		if(startDate != null) keyword.put("startDate", startDate.toString());
 //		if(endDate != null ) keyword.put("endDate", endDate.toString());
 
-		if (!keyword.isEmpty() || sort !=null)
-			clasess = clSer.getAll(PageRequest.of(page, 20), keyword, sort);
+		Page<ClassEntity> clasess = null;
+
+		if (!keyword.isEmpty() ){
+			System.out.println("length keyword: "+ keyword.size());
+			clasess = clSer.getAll(PageRequest.of(page, 20, Sort.by(UtilController.listSort(sorting))), keyword);
+		}
+
 //			.stream().map(cl -> ClassConverter.toDTO(cl)).collect(Collectors.toList());
 //				.stream().map(cl -> ClassConverter.toDTO(cl)).collect(Collectors.toList());
+		else {
+			clasess =clSer.getAll(PageRequest.of(page, 20, Sort.by(UtilController.listSort(sorting))), keyword);
+		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("totalElements", String.valueOf(clasess.getTotalElements()));
 		headers.add("page", String.valueOf(clasess.getNumber()));
@@ -109,14 +128,15 @@ public class ClassController {
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public ClassDTO addClass(@RequestBody @Validated ClassDTO CLass) {
 		try {
-			if (CLass.getName() == null || CLass.getCourse().getId() == null
-					|| CLass.getTeacher().getId() == null)
+			if (CLass.getName() == null || CLass.getCourseId() == null
+					|| CLass.getTeacherId() == null)
 				throw new BadRequestException("Value is missing");
 			ClassEntity t = ClassConverter.toEntity(CLass);
 			t.setId(null);
 			return ClassConverter.toDTO(clSer.addclass(t));
 		} catch (Exception e) {
 			// TODO: handle exception
+			log.error("[ IN ADD A NEW CLASS] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
 			throw new BadRequestException("Something went wrong!");
 		}
 
@@ -135,6 +155,8 @@ public class ClassController {
 			return ClassConverter.toDTO(clSer.updateclass(ClassConverter.toEntity(Class)));
 		} catch (Exception e) {
 			System.out.println("Exception value");
+			log.error("[ IN UPDATE CLASS] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			// TODO: handle exception
 			throw new BadRequestException(e.getMessage());
 		}

@@ -57,11 +57,11 @@ public class StudentEntity {
 	private Date createDate;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "student")
 	private Set<ExamResultEntity> examResult = new HashSet<ExamResultEntity>();
 	
 	@JsonIgnore
-	@ManyToMany( fetch = FetchType.LAZY,cascade = CascadeType.ALL )
+	@ManyToMany( cascade = CascadeType.ALL )
 	@JoinTable(name="registrations",
 			joinColumns = @JoinColumn(name="student_id"),
 			inverseJoinColumns = @JoinColumn(name="class_id")

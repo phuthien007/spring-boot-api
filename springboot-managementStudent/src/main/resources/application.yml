@@ -27,11 +27,17 @@ spring:
           starttls: 
             enable: true
     username: phailamsaonana@gmail.com
-#
+    default-encoding: UTF-8
+  #
+  jackson:
+    default-property-inclusion: non_null
+    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+
 #logging:
 #  level:
 #    org:
-#      hibernate:
-#        SQL: DEBUG
-       
+#      hibernate: DEBUG
+
+
+
 

@@ -32,13 +32,13 @@ public class ExamEntity {
 	@Column(name="name", nullable = false)
 	private String name;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "course_id", referencedColumnName = "id")
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	private CourseEntity course;
 	
 	@JsonIgnore
-	@OneToMany(mappedBy = "exam", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "exam",cascade = CascadeType.ALL)
 	private Set<ExamResultEntity> examResult = new HashSet<ExamResultEntity>();
 
 	/**

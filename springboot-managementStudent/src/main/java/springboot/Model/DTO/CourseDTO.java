@@ -2,7 +2,7 @@ package springboot.Model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+//@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class CourseDTO {
 
 	private Long id;

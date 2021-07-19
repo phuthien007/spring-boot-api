@@ -28,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "users")
 public class UserEntity {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -105,13 +104,13 @@ public class UserEntity {
 //	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
 //	private Set<AuthorizationEachAuthorEntity> authorization = new HashSet<AuthorizationEachAuthorEntity>();
 //	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@JoinColumn( name = "role", referencedColumnName = "id" )
 	private RoleEntity role;
 
 	@JsonIgnore
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany( cascade = CascadeType.ALL)
 	@JoinTable(name = "authorization_each_author", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "per_id"))
 	private Set<PermistionEntity> permistion = new HashSet<PermistionEntity>();
 

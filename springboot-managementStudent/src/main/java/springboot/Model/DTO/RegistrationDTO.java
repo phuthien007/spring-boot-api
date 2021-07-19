@@ -1,88 +1,62 @@
 package springboot.Model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 
 import java.util.Date;
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+//@JsonInclude(value = JsonInclude.Include.NON_NULL)
+
+
 public class RegistrationDTO {
 
 
-	private ClassDTO classes;
+	private Long classId;
 	
-	private StudentDTO student;
+	private Long studentId;
 	
 	private Date registerDay;
 	
 	private String status;
 
-	
+	public RegistrationDTO() {
+	}
 
-	
+	public RegistrationDTO(Long classId, Long studentId, Date registerDay, String status) {
+		this.classId = classId;
+		this.studentId = studentId;
+		this.registerDay = registerDay;
+		this.status = status;
+	}
 
-	/**
-	 * @return the registerDay
-	 */
+	public Long getClassId() {
+		return classId;
+	}
+
+	public void setClassId(Long classId) {
+		this.classId = classId;
+	}
+
+	public Long getStudentId() {
+		return studentId;
+	}
+
+	public void setStudentId(Long studentId) {
+		this.studentId = studentId;
+	}
+
 	public Date getRegisterDay() {
 		return registerDay;
 	}
 
-	/**
-	 * @param registerDay the registerDay to set
-	 */
 	public void setRegisterDay(Date registerDay) {
 		this.registerDay = registerDay;
 	}
 
-	/**
-	 * @return the status
-	 */
 	public String getStatus() {
 		return status;
 	}
 
-	/**
-	 * @param status the status to set
-	 */
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
-	/**
-	 * @return the c
-	 */
-	public ClassDTO getC() {
-		return classes;
-	}
-
-	/**
-	 * @param c the c to set
-	 */
-	public void setC(ClassDTO c) {
-		this.classes = c;
-	}
-
-	/**
-	 * @return the s
-	 */
-	public StudentDTO getS() {
-		return student;
-	}
-
-	/**
-	 * @param s the s to set
-	 */
-	public void setS(StudentDTO s) {
-		this.student = s;
-	}
-
-	/**
-	 * 
-	 */
-	public RegistrationDTO() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	
-	
 }

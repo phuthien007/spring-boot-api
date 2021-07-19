@@ -48,12 +48,12 @@ public class ClassEntity {
 	@JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "yyyy-MM-dd@HH:mm:ss.SSSX" , shape = JsonFormat.Shape.STRING)
 	private Date endDate;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@JoinColumn(name = "course_id", referencedColumnName = "id")
 	private CourseEntity course;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@JoinColumn(name = "teacher_id", referencedColumnName = "id")
 	private TeacherEntity teacher;
@@ -62,15 +62,15 @@ public class ClassEntity {
 	private String status;
 
 	@JsonIgnore
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "c")
+	@ManyToMany( cascade = CascadeType.ALL, mappedBy = "c")
 	public Set<StudentEntity> student = new HashSet<StudentEntity>();
 
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "c")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "c")
 	private Set<ExamResultEntity> examResult = new HashSet<ExamResultEntity>();
 
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "c")
+	@OneToMany( cascade = CascadeType.ALL, mappedBy = "c")
 	private Set<EventEntity> event = new HashSet<EventEntity>();
 
 //	@JsonIgnore

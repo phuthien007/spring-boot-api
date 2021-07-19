@@ -24,7 +24,7 @@ public class PlanEntity {
 	@Column(name="name", nullable = false)
 	private String name;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@JoinColumn(name="course_id", referencedColumnName = "id")
 	private CourseEntity course;

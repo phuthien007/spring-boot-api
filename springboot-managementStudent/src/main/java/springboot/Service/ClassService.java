@@ -1,5 +1,8 @@
 package springboot.Service;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -9,23 +12,27 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import springboot.ApiController.TeacherController;
 import springboot.Entity.ClassEntity;
 import springboot.Entity.CourseEntity;
 import springboot.Entity.TeacherEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.GenericSpecification2;
 import springboot.FilterSpecification.OperationQuery;
-import springboot.FilterSpecification.Specification.ClassSpecification;
 import springboot.Repository.ClassRepository;
 import springboot.Repository.CourseRepository;
 import springboot.Repository.TeacherRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class ClassService {
+
+	private static final Logger log = LogManager.getLogger(TeacherController.class);
 
 	@Autowired
 	private ClassRepository classRep;
@@ -35,7 +42,7 @@ public class ClassService {
 	private CourseRepository courseRep;
 
 	// tìm tất cả bản ghi có phân trang
-	@Cacheable(value = "classes")
+	@Cacheable(cacheNames = "classes")
 	public Page<ClassEntity> getAll(PageRequest pageable) {
 //		for (ClassEntity e : classRep.findAll(pageable)) {
 //			System.out.println(e.toString());
@@ -44,8 +51,8 @@ public class ClassService {
 	}
 
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
-	@Cacheable(value = "classes")
-	public Page<ClassEntity> getAll(Pageable pageable, Map<String, Map<String, Object>> keyword, List<String> sort) {
+	@Cacheable(cacheNames = "classes")
+	public Page<ClassEntity> getAll(Pageable pageable, Map<String, Map<String, Object>> keyword) {
 //		try {
 //			Long id = Long.parseLong(keyword);
 //			CourseEntity course = courseRep.findById(id).get();
@@ -58,7 +65,7 @@ public class ClassService {
 //			return classRep.findByNameContainingOrStatusContaining(keyword, keyword, pageable);
 //
 //		}
-		ClassSpecification classSpec = new ClassSpecification();
+		GenericSpecification2<ClassEntity> classSpec = new GenericSpecification2<>();
 		// using filter generic 2
 		for(String operation : keyword.keySet()){
 			System.out.println("querying" + operation);
@@ -69,14 +76,12 @@ public class ClassService {
 //				/System.out.println("done " + key);
 			}
 		}
-		for(String item : sort){
-			classSpec.add(item);
-		}
+
 		return classRep.findAll(classSpec, pageable);
 	}
 
 	// tìm kiếm theo id
-	@CachePut(value = "classes")
+	@CachePut(cacheNames = "classes")
 	public ClassEntity findById(Long ID) {
 		return classRep.findById(ID).orElseThrow(() -> new ResourceNotFoundException("class Not Found By ID = " + ID));
 	}
@@ -99,7 +104,7 @@ public class ClassService {
 	}
 
 	// cập nhật dữ liệu
-	@CachePut(value = "classes")
+	@CachePut(cacheNames = "classes")
 	public ClassEntity updateclass(ClassEntity Class) {
 		ClassEntity t = classRep.findById(Class.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("class Not Found By ID = " + Class.getId()));
@@ -128,13 +133,15 @@ public class ClassService {
 				t.setStatus(Class.getStatus());
 			return classRep.save(t);
 		} catch (Exception e) {
+			log.error("[ IN SERVICE UPDATE A CLASS] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
 			// TODO: handle exception
 			throw new BadRequestException(e.getMessage());
 		}
 	}
 
+
 	// xóa bản ghi
-	@CacheEvict(value = "classes", allEntries = true)
+	@CacheEvict(cacheNames = "classes", allEntries = true)
 	public Boolean deleteById(Long ID) {
 		try {
 			ClassEntity t = classRep.findById(ID)
@@ -143,6 +150,8 @@ public class ClassService {
 			return true;
 		} catch (Exception e) {
 			// TODO: handle exception
+			log.error("[. IN SERVICE DELETE A CLASS] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
+
 			throw new BadRequestException("Some thing went wrong!. You cant do it!!!");
 		}
 	}

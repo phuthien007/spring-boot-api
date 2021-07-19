@@ -9,6 +9,24 @@ integrated in field query : vấn đề ở chỗ chỉ nhập liệu thêm |asc
 - sort lag chưa complete => done
 trả về dữ liệu khác null => done
 UPDATE ONLY FIELD ?  => done
-update config mail
+update config mail => done
 tìm hiểu jhipster
+
 chỉnh lại post method	//???
+
+
+
+
+// test 2
+optimize => done
+log error	=> done?? => done
+cấu hình json global include => done
+pageable order => done
+search tiếng việt
+jpa metadata
+or in specification
+chỉnh sửa lại specification cho phù hợp
+bóc tách text từ file pdf
+tìm 1 thư viện giống springfox
+mapstruct => done
+

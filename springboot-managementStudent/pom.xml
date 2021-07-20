@@ -89,6 +89,7 @@
             <version>3.4.2</version>
         </dependency>
 
+
         <!-- for log4j2.yml, need jackson-databind and jackson-dataformat-yaml -->
         <!-- spring-boot-starter-web -> spring-boot-starter-json -> jackson-databind-->
         <!-- included by spring boot-->
@@ -134,6 +135,7 @@
 
     <build>
         <plugins>
+<!--            mapstruct process-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -154,6 +156,34 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+<!--jpa metamodel process-->
+            <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.0.5</version>
+                <executions>
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <processors>
+                                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+                            </processors>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-jpamodelgen</artifactId>
+                        <version>5.3.21.Final</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+<!--            end process jpa model generate -->
         </plugins>
     </build>
 

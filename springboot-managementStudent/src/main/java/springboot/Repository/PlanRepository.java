@@ -7,15 +7,10 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
 import springboot.Entity.CourseEntity;
 import springboot.Entity.PlanEntity;
-import springboot.Entity.TeacherEntity;
-import springboot.FilterSpecification.GenericSpecification;
-
-import java.util.List;
 
 @Repository
 public interface PlanRepository extends JpaRepository<PlanEntity, Long>,

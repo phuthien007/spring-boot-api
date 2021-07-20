@@ -1,6 +1,5 @@
 package springboot.Service;
 
-import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import springboot.Entity.PlanEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
-import springboot.FilterSpecification.GenericSpecification;
+import springboot.FilterSpecification.GenericSpecification1;
 import springboot.FilterSpecification.OperationQuery;
 import springboot.Repository.CourseRepository;
 import springboot.Repository.PlanRepository;
@@ -62,7 +61,7 @@ public class PlanService {
 //			return planRep.findByNameContaining(keyword, pageable);
 //
 //		}
-		GenericSpecification<PlanEntity> planSpec = new GenericSpecification<>();
+		GenericSpecification1<PlanEntity> planSpec = new GenericSpecification1<>();
 		for(String key : keyword.keySet()){
 			planSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}

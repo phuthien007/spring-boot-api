@@ -3,7 +3,6 @@ package springboot.Service;
 import java.util.Date;
 import java.util.Map;
 
-import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import springboot.Entity.CourseEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
-import springboot.FilterSpecification.GenericSpecification;
+import springboot.FilterSpecification.GenericSpecification1;
 import springboot.FilterSpecification.OperationQuery;
 import springboot.Repository.CourseRepository;
 
@@ -42,7 +41,7 @@ public class CourseService {
 	@Cacheable(value = "courses")
 	public Page<CourseEntity> getAll(Pageable pageable, Map<String, String> keyword) {
 
-		GenericSpecification<CourseEntity> courseSpec = new GenericSpecification<>();
+		GenericSpecification1<CourseEntity> courseSpec = new GenericSpecification1<>();
 		for( String key : keyword.keySet() ){
 			courseSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}

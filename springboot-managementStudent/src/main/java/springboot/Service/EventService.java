@@ -3,7 +3,6 @@ package springboot.Service;
 import java.util.Date;
 import java.util.Map;
 
-import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import springboot.Entity.EventEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
-import springboot.FilterSpecification.GenericSpecification;
+import springboot.FilterSpecification.GenericSpecification1;
 import springboot.FilterSpecification.OperationQuery;
 import springboot.Repository.ClassRepository;
 import springboot.Repository.EventRepository;
@@ -58,7 +57,7 @@ public class EventService {
 //			// TODO: handle exc'erroreption
 ////			System.out.println("error "+e.getLocalizedMessage());
 //			return eventRep.findByNameContainingOrStatusContaining(keyword,keyword, pageable);
-		GenericSpecification<EventEntity> eventSpec = new GenericSpecification<>();
+		GenericSpecification1<EventEntity> eventSpec = new GenericSpecification1<>();
 		for(String key : keyword.keySet()){
 			eventSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
 		}

@@ -22,10 +22,10 @@ optimize => done
 log error	=> done?? => done
 cấu hình json global include => done
 pageable order => done
-search tiếng việt
-jpa metadata
-or in specification
-chỉnh sửa lại specification cho phù hợp
+search tiếng việt => done
+jpa metadata=>done  sử dụng chưa hợp lí
+or in specification => done
+chỉnh sửa lại specification cho phù hợp => done
 bóc tách text từ file pdf
 tìm 1 thư viện giống springfox
 mapstruct => done

@@ -41,21 +41,7 @@ public class GenericSpecification2<T> implements Specification<T> {
         this.orderSorting.add(input);
     }
 
-    private Object CastToTypeInput(Class<?> javaType, String value) {
-        if (javaType == Long.class) {
-            return Long.parseLong(value);
-        }
-        if (javaType == Integer.class) {
-            return Integer.parseInt(value);
-        }
-        if (javaType == Double.class) {
-            return Double.parseDouble(value);
-        }
-        if (javaType == Float.class) {
-            return Float.parseFloat(value);
-        }
-        return null;
-    }
+
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -71,7 +57,7 @@ public class GenericSpecification2<T> implements Specification<T> {
             if (input.getOperation() != null) {
                 operation = input.getOperation().toString().toUpperCase();
             } else {
-                operation = input.getOperationCustom().toUpperCase();
+                operation = input.getOperation().toString().toUpperCase();
             }
 //            System.out.println("start filter");
 

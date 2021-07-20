@@ -23,11 +23,11 @@ import springboot.Config.Security.util.JwtUtil;
 public class JwtFilter extends OncePerRequestFilter {
 
 	@Autowired
-	private JwtUtil jwtUtil; 
-	
+	private JwtUtil jwtUtil;
+
 	@Autowired
 	private UserService userSer;
-	
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -45,16 +45,23 @@ public class JwtFilter extends OncePerRequestFilter {
 
 				UserDetails user = userSer.loadUserByUsername(username);
 				System.out.println("Authorization " + user.getAuthorities());
-				if (user != null && jwtUtil.validateToken(token, user)) {
-					UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-							user, user.getUsername(), user.getAuthorities());
+				try {
+					if (user != null && jwtUtil.validateToken(token, user)) {
+						UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+								user, user.getUsername(), user.getAuthorities());
 
-					auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-					SecurityContextHolder.getContext().setAuthentication(auth);
+						auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+						SecurityContextHolder.getContext().setAuthentication(auth);
+					}
+					else{
+						throw new BadRequestException("Filter Error!");
+					}
+
 				}
-				else{
-					throw new BadRequestException("Filter Error!");
+				catch (Exception e){
+					throw  new BadRequestException(e.getMessage());
 				}
+
 			}
 			filterChain.doFilter(request, response);
 		} catch (Exception e) {

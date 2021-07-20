@@ -1,6 +1,8 @@
 package springboot.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
@@ -19,15 +21,19 @@ import springboot.Entity.ClassEntity;
 import springboot.Entity.RegistrationEntity;
 import springboot.Entity.StudentEntity;
 import springboot.Entity.CompositeKey.ClassStudentIdKey;
+import springboot.Entity.TeacherEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
+import springboot.FilterSpecification.FilterInput;
+import springboot.FilterSpecification.GenericSpecification3;
+import springboot.FilterSpecification.OperationQuery;
 import springboot.Repository.ClassRepository;
 import springboot.Repository.RegistrationRepository;
 import springboot.Repository.StudentRepository;
 
 @Service
 public class RegistrationService {
-	private static final Logger log = LogManager.getLogger(TeacherController.class);
+	private static final Logger log = LogManager.getLogger(RegistrationService.class);
 
 	@Autowired
 	private RegistrationRepository registrationRep;
@@ -43,23 +49,17 @@ public class RegistrationService {
 	}
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "registration")
-	public Page<RegistrationEntity> getAll(Pageable pageable ,String keyword) {
-		try {
-			Long id = Long.parseLong(keyword);
-			ClassEntity cl = clRep.findById(id).get();
-			StudentEntity student= studentRep.findById(id).get();
-//			System.out.println("By id: "+ id);
-//			System.out.println(cl);
-			return registrationRep.findByStatusContainingOrCOrS(keyword, cl, student,pageable);
+	public Page<RegistrationEntity> getAll(Pageable pageable ,
+					   Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword) {
+		GenericSpecification3<RegistrationEntity> registrationSpec = new GenericSpecification3<>();
+		// using filter generic 2
+		for(OperationQuery operation : keyword.keySet()){
+			System.out.println("querying" + operation);
+			System.out.println("data "+ keyword.get(operation));
 
-		} catch (Exception e) {
-			// TODO: handle exc'erroreption
-			log.error("[ IN SERVICE GET ALL REGISTRATION] has error: " + e.getMessage() + " " + new Date(System.currentTimeMillis()));
-
-//			System.out.println("error "+e.getLocalizedMessage());
-			return registrationRep.findByStatusContaining(keyword, pageable);
-
+			registrationSpec.add(new FilterInput(operation.toString(), keyword.get(operation), operation));
 		}
+		return registrationRep.findAll(registrationSpec, pageable);
 	}
 
 	// tìm kiếm theo id

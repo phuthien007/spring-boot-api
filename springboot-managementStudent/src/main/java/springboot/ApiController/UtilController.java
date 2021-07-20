@@ -2,12 +2,13 @@ package springboot.ApiController;
 
 import org.springframework.data.domain.Sort;
 import springboot.Exception.BadRequestException;
+import springboot.FilterSpecification.OperationQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 public class UtilController {
 
@@ -42,10 +43,9 @@ public class UtilController {
                         if (orQuery.get(query.substring(0, query.indexOf(":=")).trim()) != null) {
                             System.out.println("execute here if 1");
                             try {
-                                tmp =  orQuery.get(query.substring(0, query.indexOf(":=")).trim());
+                                tmp = orQuery.get(query.substring(0, query.indexOf(":=")).trim());
                                 tmp.add(query.substring(query.indexOf(":=") + 2, query.length()).trim().toLowerCase());
-                            }
-                            catch (Exception e){
+                            } catch (Exception e) {
                                 System.out.println("error " + e.getMessage());
                             }
                             orQuery.put(query.substring(0, query.indexOf(":=")).trim(), tmp);

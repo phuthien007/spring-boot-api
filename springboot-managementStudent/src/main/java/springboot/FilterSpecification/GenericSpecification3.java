@@ -54,31 +54,32 @@ public class GenericSpecification3<T> implements Specification<T> {
                         System.out.println("mapp: " + input.getValueMap());
                         for (String index : input.getValueMap().keySet()) {
                             predicate1 = predicate2 = null;
-                            String field = input.getValueMap().get(index).keySet().toArray()[0].toString();
-                            List<String> values = input.getValueMap().get(index).get(field);
-                            System.out.println("field " + field + " value " + values);
-                            System.out.println("root "+root.get(field).getJavaType().getName());
-                            for (String value : values) {
-                                System.out.println("value " + value);
-                                if(  root.get(field).getJavaType().getName().equals("java.util.Date") ){
-                                    predicate2 = (criteriaBuilder
-                                            .equal((root.get(field)).as(Date.class),
-                                                    (Date)castToRequiredType(root.get(field).getJavaType(), value)));
+                            for (int i = 0; i < input.getValueMap().get(index).keySet().toArray().length; i++) {
+                                String field = input.getValueMap().get(index).keySet().toArray()[i].toString();
+                                List<String> values = input.getValueMap().get(index).get(field);
+                                System.out.println("field " + field + " value " + values);
+                                System.out.println("root " + root.get(field).getJavaType().getName());
+                                for (String value : values) {
+                                    System.out.println("value " + value);
+                                    if (root.get(field).getJavaType().getName().equals("java.util.Date")) {
+                                        System.out.println("run on if date " + (root.get(field)).as(String.class).getJavaType().getName());
+                                        predicate2 = (criteriaBuilder
+                                                .equal((root.get(field)).as(String.class),
+                                                        value.toString()));
 
-                                }
-                                else{
-//                                    qb.like(qb.function("unaccent",
-//                                            String.class,qb.lower(from.get("name"))),
-//                                            "%" + removeAccents(name) + "%");
-                                    predicate2 = (criteriaBuilder
-                                            .equal( criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field)) ) , VNCharacterUtils.unAccent(value.toLowerCase()) ));
+                                    } else {
+                                        predicate2 = (criteriaBuilder
+                                                .equal(criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field))),  VNCharacterUtils.unAccent(value.toLowerCase()) ));
 
+                                    }
+                                    if (predicate1 != null) {
+                                        System.out.println("Execute or");
+                                        predicate1 = criteriaBuilder.or(predicate1, predicate2);
+                                    } else
+                                        predicate1 = predicate2;
                                 }
-                                if (predicate1 != null)
-                                    predicate1 = criteriaBuilder.or(predicate1, predicate2);
-                                else
-                                    predicate1 = predicate2;
                             }
+
                             predicates.add(predicate1);
                         }
                     } catch (Exception e) {
@@ -93,28 +94,32 @@ public class GenericSpecification3<T> implements Specification<T> {
                         System.out.println("mapp: " + input.getValueMap());
                         for (String index : input.getValueMap().keySet()) {
                             predicate1 = predicate2 = null;
-                            String field = input.getValueMap().get(index).keySet().toArray()[0].toString();
-                            List<String> values = input.getValueMap().get(index).get(field);
-                            System.out.println("field " + field + " value " + values);
-                            System.out.println("root "+root.get(field).getJavaType().getName());
-                            for (String value : values) {
-                                System.out.println("value " + value);
-                                if( root.get(field).getJavaType().getName().equals("java.util.Date") ){
-                                    predicate2 = (criteriaBuilder
-                                            .notEqual((root.get(field)).as(Date.class),
-                                                    (Date)castToRequiredType(root.get(field).getJavaType(), value)));
+                            for (int i = 0; i < input.getValueMap().get(index).keySet().toArray().length; i++) {
+                                String field = input.getValueMap().get(index).keySet().toArray()[i].toString();
+                                List<String> values = input.getValueMap().get(index).get(field);
+                                System.out.println("field " + field + " value " + values);
+                                System.out.println("root " + root.get(field).getJavaType().getName());
+                                for (String value : values) {
+                                    System.out.println("value " + value);
+                                    if (root.get(field).getJavaType().getName().equals("java.util.Date")) {
+                                        System.out.println("run on if date " + (root.get(field)).as(String.class).getJavaType().getName());
+                                        predicate2 = (criteriaBuilder
+                                                .notEqual((root.get(field)).as(String.class),
+                                                        value.toString()));
 
-                                }
-                                else{
-                                    predicate2 = (criteriaBuilder
-                                            .notEqual( criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field)) ) , VNCharacterUtils.unAccent(value.toLowerCase()) ));
+                                    } else {
+                                        predicate2 = (criteriaBuilder
+                                                .notEqual(criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field))),  VNCharacterUtils.unAccent(value.toLowerCase()) ));
 
+                                    }
+                                    if (predicate1 != null) {
+                                        System.out.println("Execute or");
+                                        predicate1 = criteriaBuilder.or(predicate1, predicate2);
+                                    } else
+                                        predicate1 = predicate2;
                                 }
-                                if (predicate1 != null)
-                                    predicate1 = criteriaBuilder.or(predicate1, predicate2);
-                                else
-                                    predicate1 = predicate2;
                             }
+
                             predicates.add(predicate1);
                         }
                     } catch (Exception e) {
@@ -128,29 +133,33 @@ public class GenericSpecification3<T> implements Specification<T> {
                         System.out.println("mapp: " + input.getValueMap());
                         for (String index : input.getValueMap().keySet()) {
                             predicate1 = predicate2 = null;
-                            String field = input.getValueMap().get(index).keySet().toArray()[0].toString();
-                            List<String> values = input.getValueMap().get(index).get(field);
-                            System.out.println("field " + field + " value " + values);
-                            System.out.println("root "+root.get(field).getJavaType().getName());
-                            for (String value : values) {
-                                System.out.println("value " + value);
-                                if( root.get(field).getJavaType().getName().equals("java.util.Date") ){
-                                    System.out.println("run on if date " + (root.get(field)).as(String.class).getJavaType().getName()  );
-                                    predicate2 = (criteriaBuilder
-                                            .like((root.get(field)).as(String.class),
-                                                     "%"+value.toString()+"%"));
+                            System.out.println("index " + index);
+                            for (int i = 0; i < input.getValueMap().get(index).keySet().toArray().length; i++) {
+                                String field = input.getValueMap().get(index).keySet().toArray()[i].toString();
+                                List<String> values = input.getValueMap().get(index).get(field);
+                                System.out.println("field " + field + " value " + values);
+                                System.out.println("root " + root.get(field).getJavaType().getName());
+                                for (String value : values) {
+                                    System.out.println("value " + value);
+                                    if (root.get(field).getJavaType().getName().equals("java.util.Date")) {
+                                        System.out.println("run on if date " + (root.get(field)).as(String.class).getJavaType().getName());
+                                        predicate2 = (criteriaBuilder
+                                                .like((root.get(field)).as(String.class),
+                                                        "%" + value.toString() + "%"));
 
-                                }
-                                else{
-                                    predicate2 = (criteriaBuilder
-                                            .like( criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field)) ) , "%"+VNCharacterUtils.unAccent(value.toLowerCase())+"%" ));
+                                    } else {
+                                        predicate2 = (criteriaBuilder
+                                                .like(criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field))), "%" + VNCharacterUtils.unAccent(value.toLowerCase()) + "%"));
 
+                                    }
+                                    if (predicate1 != null) {
+                                        System.out.println("Execute or");
+                                        predicate1 = criteriaBuilder.or(predicate1, predicate2);
+                                    } else
+                                        predicate1 = predicate2;
                                 }
-                                if (predicate1 != null)
-                                    predicate1 = criteriaBuilder.or(predicate1, predicate2);
-                                else
-                                    predicate1 = predicate2;
                             }
+
                             predicates.add(predicate1);
                         }
                     } catch (Exception e) {
@@ -164,30 +173,32 @@ public class GenericSpecification3<T> implements Specification<T> {
                         System.out.println("mapp: " + input.getValueMap());
                         for (String index : input.getValueMap().keySet()) {
                             predicate1 = predicate2 = null;
-                            String field = input.getValueMap().get(index).keySet().toArray()[0].toString();
-                            List<String> values = input.getValueMap().get(index).get(field);
-                            System.out.println("field " + field + " value " + values);
-                            System.out.println("root "+root.get(field).getJavaType().getName());
-                            for (String value : values) {
-                                System.out.println("value " + value);
-                                if( root.get(field).getJavaType().getName().equals("java.util.Date") ){
-                                    predicate2 = (criteriaBuilder
-                                            .greaterThan((root.get(field)).as(Date.class),
-                                                    (Date)castToRequiredType(root.get(field).getJavaType(), value)));
+                            for (int i = 0; i < input.getValueMap().get(index).keySet().toArray().length; i++) {
+                                String field = input.getValueMap().get(index).keySet().toArray()[i].toString();
+                                List<String> values = input.getValueMap().get(index).get(field);
+                                System.out.println("field " + field + " value " + values);
+                                System.out.println("root " + root.get(field).getJavaType().getName());
+                                for (String value : values) {
+                                    System.out.println("value " + value);
+                                    if (root.get(field).getJavaType().getName().equals("java.util.Date")) {
+                                        predicate2 = (criteriaBuilder
+                                                .greaterThan((root.get(field)).as(Date.class),
+                                                        (Date) castToRequiredType(root.get(field).getJavaType(), value)));
 
-                                }
-                                else{
-                                    predicate2 = (criteriaBuilder
-                                            .gt(root.get(field),
-                                                    (Number) castToRequiredType(
-                                                    root.get(input.getField()).getJavaType(),
-                                                    input.getValue().toString())));
+                                    } else {
+                                        predicate2 = (criteriaBuilder
+                                                .gt(root.get(field),
+                                                        (Number) castToRequiredType(
+                                                                root.get(input.getField()).getJavaType(),
+                                                                input.getValue().toString())));
 
+                                    }
+                                    if (predicate1 != null)
+                                        predicate1 = criteriaBuilder.or(predicate1, predicate2);
+                                    else
+                                        predicate1 = predicate2;
                                 }
-                                if (predicate1 != null)
-                                    predicate1 = criteriaBuilder.or(predicate1, predicate2);
-                                else
-                                    predicate1 = predicate2;
+
                             }
                             predicates.add(predicate1);
                         }
@@ -206,37 +217,39 @@ public class GenericSpecification3<T> implements Specification<T> {
                         System.out.println("mapp: " + input.getValueMap());
                         for (String index : input.getValueMap().keySet()) {
                             predicate1 = predicate2 = null;
-                            String field = input.getValueMap().get(index).keySet().toArray()[0].toString();
-                            List<String> values = input.getValueMap().get(index).get(field);
-                            System.out.println("field " + field + " value " + values);
-                            System.out.println("root "+root.get(field).getJavaType().getName());
-                            for (String value : values) {
-                                System.out.println("value " + value);
-                                if( root.get(field).getJavaType().getName().equals("java.util.Date") ){
-                                    predicate2 = (criteriaBuilder
-                                            .lessThan((root.get(field)).as(Date.class),
-                                                    (Date)castToRequiredType(root.get(field).getJavaType(), value)));
+                            for (int i = 0; i < input.getValueMap().get(index).keySet().toArray().length; i++) {
+                                String field = input.getValueMap().get(index).keySet().toArray()[i].toString();
+                                List<String> values = input.getValueMap().get(index).get(field);
+                                System.out.println("field " + field + " value " + values);
+                                System.out.println("root " + root.get(field).getJavaType().getName());
+                                for (String value : values) {
+                                    System.out.println("value " + value);
+                                    if (root.get(field).getJavaType().getName().equals("java.util.Date")) {
+                                        predicate2 = (criteriaBuilder
+                                                .lessThan((root.get(field)).as(Date.class),
+                                                        (Date) castToRequiredType(root.get(field).getJavaType(), value)));
 
-                                }
-                                else if(root.get(field).getJavaType().getName().equals("java.util.String")){
-                                    predicate2 = (criteriaBuilder
-                                            .lessThan((root.get(field)).as(String.class),
-                                                    (String) castToRequiredType(root.get(field).getJavaType(), value)));
+                                    } else if (root.get(field).getJavaType().getName().equals("java.util.String")) {
+                                        predicate2 = (criteriaBuilder
+                                                .lessThan((root.get(field)).as(String.class),
+                                                        (String) castToRequiredType(root.get(field).getJavaType(), value)));
 
-                                }
-                                else{
-                                    predicate2 = (criteriaBuilder
-                                            .lt(root.get(field),
-                                                    (Number) castToRequiredType(
-                                                            root.get(input.getField()).getJavaType(),
-                                                            input.getValue().toString())));
+                                    } else {
+                                        predicate2 = (criteriaBuilder
+                                                .lt(root.get(field),
+                                                        (Number) castToRequiredType(
+                                                                root.get(input.getField()).getJavaType(),
+                                                                input.getValue().toString())));
 
+                                    }
+                                    if (predicate1 != null)
+                                        predicate1 = criteriaBuilder.or(predicate1, predicate2);
+                                    else
+                                        predicate1 = predicate2;
                                 }
-                                if (predicate1 != null)
-                                    predicate1 = criteriaBuilder.or(predicate1, predicate2);
-                                else
-                                    predicate1 = predicate2;
+
                             }
+
                             predicates.add(predicate1);
                         }
                     } catch (Exception e) {
@@ -265,8 +278,7 @@ public class GenericSpecification3<T> implements Specification<T> {
             return Integer.valueOf(value);
         } else if (Enum.class.isAssignableFrom(fieldType)) {
             return Enum.valueOf(fieldType, value);
-        }
-        else if(fieldType.isAssignableFrom(Date.class)){
+        } else if (fieldType.isAssignableFrom(Date.class)) {
             return new SimpleDateFormat("yyyy-MM-dd").parse(value);
         }
 

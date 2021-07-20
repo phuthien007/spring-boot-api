@@ -23,21 +23,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserService userSer;
-	
+
 	@Autowired
 	private JwtFilter jwtFilter;
-	
+
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		// TODO Auto-generated method stub
 		auth.userDetailsService(userSer);
 	}
-	
+
 //	 @Override
 //	    public void configure(WebSecurity web) throws Exception {
 //	        web.ignoring().antMatchers("/v2/api-docs",
@@ -51,7 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 		http.csrf().disable().authorizeRequests()
 		.antMatchers("/api/login", "/api/sign-up","/v2/api-docs",
                 "/configuration/ui",
@@ -66,23 +66,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //		.anyRequest().authenticated()
 		.and().exceptionHandling()
  		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-			
+
 		http.addFilterBefore(jwtFilter,  UsernamePasswordAuthenticationFilter.class);
 	}
-	
-	
+
+
 	@Bean(name= BeanIds.AUTHENTICATION_MANAGER)
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		// TODO Auto-generated method stub
 		return super.authenticationManagerBean();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 }

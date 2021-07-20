@@ -13,11 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import springboot.ApiController.TeacherController;
+import springboot.Entity.ClassEntity;
 import springboot.Entity.TeacherEntity;
 import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
 import springboot.FilterSpecification.GenericSpecification2;
+import springboot.FilterSpecification.GenericSpecification3;
 import springboot.FilterSpecification.OperationQuery;
 import springboot.Repository.TeacherRepository;
 
@@ -44,13 +46,18 @@ public class TeacherService {
     }
 
     // tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
-    public Page<TeacherEntity> getAll(Pageable pageable, Map<String, String> keyword)
+    public Page<TeacherEntity> getAll(Pageable pageable,
+                      Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword)
     {
-        GenericSpecification2<TeacherEntity> teacherSpec = new GenericSpecification2<>();
-        for (String input : keyword.keySet()) {
-            teacherSpec.add(new FilterInput(input, keyword.get(input), OperationQuery.LIKE));
+        GenericSpecification3<TeacherEntity> teacherSpec = new GenericSpecification3<>();
+        // using filter generic 2
+        for(OperationQuery operation : keyword.keySet()){
+            System.out.println("querying" + operation);
+            System.out.println("data "+ keyword.get(operation));
+
+            teacherSpec.add(new FilterInput(operation.toString(), keyword.get(operation), operation));
         }
-        System.out.println("before sort");
+
 //		teacherSpec.add(new FilterInput("fullname", keyword.get("fullname"), OperationQuery.EQUALS));
         return teacherRep.findAll(teacherSpec, pageable);
     }

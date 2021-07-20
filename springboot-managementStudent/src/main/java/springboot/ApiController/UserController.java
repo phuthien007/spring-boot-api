@@ -153,12 +153,6 @@ public class  UserController {
     //	// đăng nhập
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest user) throws Exception {
-//		System.out.println("login user");
-//		UserDetails user = userSer.loadUserByUsername(request.getUsername());
-//		
-//		if( user != null || passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-//			throw new AuthenticationException("username or password  not correct!");
-//		}
         try {
             try {
                 authenticationManager

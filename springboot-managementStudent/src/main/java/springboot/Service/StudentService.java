@@ -1,6 +1,7 @@
 package springboot.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +19,7 @@ import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
 import springboot.FilterSpecification.GenericSpecification1;
+import springboot.FilterSpecification.GenericSpecification3;
 import springboot.FilterSpecification.OperationQuery;
 import springboot.Repository.StudentRepository;
 
@@ -35,13 +37,23 @@ public class StudentService {
 	}
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "students")
-	public Page<StudentEntity> getAll(Pageable pageable , Map<String, String> keyword) {
+	public Page<StudentEntity> getAll(Pageable pageable ,
+			  Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword) {
 //		return studentRep
 //		.findByAddressContainingOrFullnameContainingOrEmailContainingOrPhoneContainingOrNoteContaining(
 //				keyword, keyword, keyword, keyword, keyword, pageable);
-		GenericSpecification1<StudentEntity> studentSpec = new GenericSpecification1<>();
-		for( String key : keyword.keySet()){
-			studentSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
+		GenericSpecification3<StudentEntity> studentSpec = new GenericSpecification3<>();
+		for(OperationQuery operation : keyword.keySet()){
+			System.out.println("querying" + operation);
+//			for(String key : keyword.get(operation).keySet()){
+////				System.out.println("operation " + operation + " " + keyword.get(operation).get(key));
+////				System.out.println(key + " query " +keyword.get(key) );
+//				classSpec.add( new FilterInput(key, keyword.get(operation).get(key) , operation));
+////				/System.out.println("done " + key);
+//			}
+			System.out.println("data "+ keyword.get(operation));
+
+			studentSpec.add(new FilterInput(operation.toString(), keyword.get(operation), operation));
 		}
 		return studentRep.findAll(studentSpec, pageable);
 	}

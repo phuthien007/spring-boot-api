@@ -33,7 +33,7 @@ import java.util.Map;
 @Service
 public class ClassService {
 
-	private static final Logger log = LogManager.getLogger(TeacherController.class);
+	private static final Logger log = LogManager.getLogger(ClassService.class);
 
 	@Autowired
 	private ClassRepository classRep;
@@ -53,29 +53,12 @@ public class ClassService {
 
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(cacheNames = "classes")
-	public Page<ClassEntity> getAll(Pageable pageable, Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword) {
-//		try {
-//			Long id = Long.parseLong(keyword);
-//			CourseEntity course = courseRep.findById(id).get();
-//			TeacherEntity teacher = teacherRep.findById(id).get();
-//			return classRep.findByNameContainingOrStatusContainingOrTeacherOrCourse(keyword, keyword, teacher, course,
-//					pageable);
-//
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			return classRep.findByNameContainingOrStatusContaining(keyword, keyword, pageable);
-//
-//		}
+	public Page<ClassEntity> getAll(Pageable pageable,
+					Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword) {
 		GenericSpecification3<ClassEntity> classSpec = new GenericSpecification3<>();
 		// using filter generic 2
 		for(OperationQuery operation : keyword.keySet()){
 			System.out.println("querying" + operation);
-//			for(String key : keyword.get(operation).keySet()){
-////				System.out.println("operation " + operation + " " + keyword.get(operation).get(key));
-////				System.out.println(key + " query " +keyword.get(key) );
-//				classSpec.add( new FilterInput(key, keyword.get(operation).get(key) , operation));
-////				/System.out.println("done " + key);
-//			}
 			System.out.println("data "+ keyword.get(operation));
 
 			classSpec.add(new FilterInput(operation.toString(), keyword.get(operation), operation));

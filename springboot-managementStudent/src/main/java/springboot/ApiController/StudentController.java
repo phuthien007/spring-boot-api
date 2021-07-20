@@ -31,8 +31,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import springboot.Entity.StudentEntity;
 import springboot.Exception.BadRequestException;
+import springboot.FilterSpecification.OperationQuery;
 import springboot.Model.DTO.StudentDTO;
 import springboot.Model.Mapper.StudentMapper;
+import springboot.Model.MetaModel.StudentMeta;
+import springboot.Model.MetaModel.TeacherMeta;
 import springboot.Service.StudentService;
 
 @RestController
@@ -45,8 +48,23 @@ public class StudentController {
     @Autowired
     private StudentMapper StudentConverter;
 
-    private static final Logger log = LogManager.getLogger(TeacherController.class);
+    private static final Logger log = LogManager.getLogger(StudentController.class);
+    private Map<String, Map<String, List<String>>> validateInput(String[] params) {
+        Map<String, Map<String, List<String>>> inputTransform = new HashMap<>();
+        try {
+            inputTransform = UtilController.transformInput(params);
+            for (String index : inputTransform.keySet()) {
+                for (String field : inputTransform.get(index).keySet()) {
+                    if (!StudentMeta.hasAttribute(field))
+                        throw new BadRequestException("input invalid, no find any field");
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestException(e.getMessage());
+        }
 
+        return inputTransform;
+    }
 
     // lấy tất cả các bản ghi
     @GetMapping("public/student")
@@ -55,29 +73,35 @@ public class StudentController {
     public ResponseEntity<?> getAllstudents(
             // pageable
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            // filter params
-            @RequestParam(name = "fullname", required = false) String fullname,
-            @RequestParam(name = "address", required = false) String address,
-            @RequestParam(name = "email", required = false) String email,
-            @RequestParam(name = "phone", required = false) String phone,
-            @RequestParam(name = "birthday", required = false) Date birthday,
-            @RequestParam(name = "note", required = false) String note,
-            @RequestParam(name = "facebook", required = false) String facebook,
-            @RequestParam(name = "createDate", required = false) Date createDate,
-            // sort
+            // filter Params
+            @RequestParam(name = "equal", required = false) String[] equalParams,
+            @RequestParam(name = "greater_than", required = false) String[] greaterThanParams,
+            @RequestParam(name = "less_than", required = false) String[] lessThanParams,
+            @RequestParam(name = "like", required = false) String[] likeParams,
+            // sorting
             @RequestParam(name = "sort", required = false, defaultValue = "id|asc") List<String> sorting
+
     ) {
         Page<StudentEntity> students = null;
-        Map<String, String> keyword = new HashMap<>();
-        if (fullname != null) keyword.put("fullname", fullname);
-        if (address != null) keyword.put("address", address);
-        if (email != null) keyword.put("email", email);
-        if (phone != null) keyword.put("phone", phone);
-//        if (birthday != null) keyword.put("birthday", birthday);
-        if (note != null) keyword.put("note", note);
-        if (facebook != null) keyword.put("facebook", facebook);
-//        if(createDate != null) keyword.put("createDate", createDate);
+        Map<String, Map<String, List<String>>> inputTransform = new HashMap<>();
+        Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword = new HashMap<>();
 
+        if (equalParams != null) {
+            inputTransform = validateInput(equalParams);
+            keyword.put(OperationQuery.EQUALS, inputTransform);
+        }
+        if (greaterThanParams != null) {
+            inputTransform = validateInput(greaterThanParams);
+            keyword.put(OperationQuery.GREATER_THAN, inputTransform);
+        }
+        if (lessThanParams != null) {
+            inputTransform = validateInput(lessThanParams);
+            keyword.put(OperationQuery.LESS_THAN, inputTransform);
+        }
+        if (likeParams != null) {
+            inputTransform = validateInput(likeParams);
+            keyword.put(OperationQuery.LIKE, inputTransform);
+        }
         // sort
 
         if (!keyword.isEmpty())

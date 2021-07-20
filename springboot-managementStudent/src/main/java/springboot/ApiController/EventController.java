@@ -31,8 +31,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import springboot.Entity.EventEntity;
 import springboot.Exception.BadRequestException;
+import springboot.FilterSpecification.OperationQuery;
 import springboot.Model.DTO.EventDTO;
 import springboot.Model.Mapper.EventMapper;
+import springboot.Model.MetaModel.EventMeta;
+import springboot.Model.MetaModel.TeacherMeta;
 import springboot.Service.EventService;
 
 @RestController
@@ -45,7 +48,24 @@ public class EventController {
 	@Autowired
 	private EventMapper EventConverter;
 
-	private static final Logger log = LogManager.getLogger(TeacherController.class);
+	private Map<String, Map<String, List<String>>> validateInput(String[] params) {
+		Map<String, Map<String, List<String>>> inputTransform = new HashMap<>();
+		try {
+			inputTransform = UtilController.transformInput(params);
+			for (String index : inputTransform.keySet()) {
+				for (String field : inputTransform.get(index).keySet()) {
+					if (!EventMeta.hasAttribute(field))
+						throw new BadRequestException("input invalid, no find any field");
+				}
+			}
+		} catch (Exception e) {
+			throw new BadRequestException(e.getMessage());
+		}
+
+		return inputTransform;
+	}
+
+	private static final Logger log = LogManager.getLogger(EventController.class);
 
 
 	// lấy tất cả các bản ghi
@@ -55,18 +75,35 @@ public class EventController {
 	public ResponseEntity<?> getAllevents(
 			// pageable
 			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
-			// filter params
-			@RequestParam(name = "name" ,required = false) String name,
-			@RequestParam(name = "createDate" ,required = false) Date createDate,
-			@RequestParam(name = "status" ,required = false) String status,
-			@RequestParam(name = "happenDate" ,required = false) Date happenDate,
-			@RequestParam(name="sort", required = false, defaultValue = "id|asc") List<String> sorting) {
+			// filter Params
+			@RequestParam(name = "equal", required = false) String[] equalParams,
+			@RequestParam(name = "greater_than", required = false) String[] greaterThanParams,
+			@RequestParam(name = "less_than", required = false) String[] lessThanParams,
+			@RequestParam(name = "like", required = false) String[] likeParams,
+			// sorting
+			@RequestParam(name = "sort", required = false, defaultValue = "id|asc") List<String> sorting
+
+	) {
 		Page<EventEntity> events = null;
-		Map<String, String> keyword = new HashMap<>();
-		if(name != null) keyword.put("name", name);
-		if(createDate != null) keyword.put("createDate", createDate.toString());
-		if(status != null) keyword.put("status", status);
-		if(happenDate != null) keyword.put("happenDate", happenDate.toString());
+		Map<String, Map<String, List<String>>> inputTransform = new HashMap<>();
+		Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword = new HashMap<>();
+
+		if (equalParams != null) {
+			inputTransform = validateInput(equalParams);
+			keyword.put(OperationQuery.EQUALS, inputTransform);
+		}
+		if (greaterThanParams != null) {
+			inputTransform = validateInput(greaterThanParams);
+			keyword.put(OperationQuery.GREATER_THAN, inputTransform);
+		}
+		if (lessThanParams != null) {
+			inputTransform = validateInput(lessThanParams);
+			keyword.put(OperationQuery.LESS_THAN, inputTransform);
+		}
+		if (likeParams != null) {
+			inputTransform = validateInput(likeParams);
+			keyword.put(OperationQuery.LIKE, inputTransform);
+		}
 		if (!keyword.isEmpty()) {
 //			System.out.println("thuc hien 1");
 			events = eventSer.getAll(PageRequest.of(page, 20, Sort.by(UtilController.listSort(sorting))), keyword);

@@ -24,6 +24,7 @@ import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
 import springboot.FilterSpecification.GenericSpecification2;
+import springboot.FilterSpecification.GenericSpecification3;
 import springboot.FilterSpecification.OperationQuery;
 import springboot.Repository.ClassRepository;
 import springboot.Repository.ExamRepository;
@@ -52,25 +53,15 @@ public class ExamResultService {
 	}
 
 //	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
-	public Page<ExamResultEntity> getAll(Pageable pageable, Map<String, String> keyword, List<String> sort) {
-//		try {
-//			Long id = Long.parseLong(keyword);
-//			StudentEntity student = studentRep.findById(id).get();
-//			ExamEntity exam = examRep.findById(id).get();
-//			ClassEntity c = classRep.findById(id).get();
-//			return examResultRep.findByScoreOrStudentOrExamOrClass(id, student, exam, c,pageable);
-//
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			throw new BadRequestException(e.getLocalizedMessage());
-//		}
-		GenericSpecification2<ExamResultEntity> examResultSpec = new GenericSpecification2<>();
-		for(String key : keyword.keySet()){
-			examResultSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
-		}
-		for(String item : sort) {
-			System.out.println(item);
-			examResultSpec.add(item);
+	public Page<ExamResultEntity> getAll(Pageable pageable,
+					 Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword) {
+		GenericSpecification3<ExamResultEntity> examResultSpec = new GenericSpecification3<>();
+		// using filter generic 2
+		for(OperationQuery operation : keyword.keySet()){
+			System.out.println("querying" + operation);
+			System.out.println("data "+ keyword.get(operation));
+
+			examResultSpec.add(new FilterInput(operation.toString(), keyword.get(operation), operation));
 		}
 		return examResultRep.findAll(examResultSpec, pageable);
 	}

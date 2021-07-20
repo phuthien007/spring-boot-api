@@ -18,6 +18,7 @@ import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
 import springboot.FilterSpecification.GenericSpecification1;
+import springboot.FilterSpecification.GenericSpecification3;
 import springboot.FilterSpecification.OperationQuery;
 import springboot.Repository.CourseRepository;
 import springboot.Repository.PlanRepository;
@@ -50,20 +51,14 @@ public class PlanService {
 
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(cacheNames = "plans")
-	public Page<PlanEntity> getAll(Pageable pageable, Map<String, String> keyword) {
-//		try {
-//			Long id = Long.parseLong(keyword);
-//			CourseEntity course = courseRep.findById(id).get();
-//			return planRep.findByNameContainingOrCourse(keyword, course, pageable);
-//
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			return planRep.findByNameContaining(keyword, pageable);
-//
-//		}
-		GenericSpecification1<PlanEntity> planSpec = new GenericSpecification1<>();
-		for(String key : keyword.keySet()){
-			planSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
+	public Page<PlanEntity> getAll(Pageable pageable,
+			   Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword) {
+		GenericSpecification3<PlanEntity> planSpec = new GenericSpecification3<>();
+		for(OperationQuery operation : keyword.keySet()){
+			System.out.println("querying" + operation);
+			System.out.println("data "+ keyword.get(operation));
+
+			planSpec.add(new FilterInput(operation.toString(), keyword.get(operation), operation));
 		}
 		return  planRep.findAll(planSpec, pageable);
 	}

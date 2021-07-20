@@ -32,15 +32,35 @@ import org.springframework.web.bind.annotation.RestController;
 import springboot.Entity.RegistrationEntity;
 import springboot.Entity.CompositeKey.ClassStudentIdKey;
 import springboot.Exception.BadRequestException;
+import springboot.FilterSpecification.OperationQuery;
 import springboot.Model.DTO.RegistrationDTO;
 import springboot.Model.Mapper.RegistrationMapper;
+import springboot.Model.MetaModel.RegistrationMeta;
+import springboot.Model.MetaModel.TeacherMeta;
 import springboot.Service.RegistrationService;
 
 @RestController
 @RequestMapping(path = "/api/")
 public class RegistrationController {
 
-	private static final Logger log = LogManager.getLogger(TeacherController.class);
+	private Map<String, Map<String, List<String>>> validateInput(String[] params) {
+		Map<String, Map<String, List<String>>> inputTransform = new HashMap<>();
+		try {
+			inputTransform = UtilController.transformInput(params);
+			for (String index : inputTransform.keySet()) {
+				for (String field : inputTransform.get(index).keySet()) {
+					if (!RegistrationMeta.hasAttribute(field))
+						throw new BadRequestException("input invalid, no find any field");
+				}
+			}
+		} catch (Exception e) {
+			throw new BadRequestException(e.getMessage());
+		}
+
+		return inputTransform;
+	}
+
+	private static final Logger log = LogManager.getLogger(RegistrationController.class);
 
 	@Autowired
 	private RegistrationService registrationSer;
@@ -53,10 +73,40 @@ public class RegistrationController {
 	@ResponseStatus(code = HttpStatus.OK, value = HttpStatus.OK)
 	@Transactional(timeout = 1000, rollbackFor = BadRequestException.class)
 	public ResponseEntity<?> getAllregistrations(
+			// pageable
 			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
-			@RequestParam(name = "keyword", required = false) String keyword,
-			@RequestParam(name="sort", required = false, defaultValue = "id|asc")List<String> sorting) {
+			// filter Params
+			@RequestParam(name = "equal", required = false) String[] equalParams,
+			@RequestParam(name = "greater_than", required = false) String[] greaterThanParams,
+			@RequestParam(name = "less_than", required = false) String[] lessThanParams,
+			@RequestParam(name = "like", required = false) String[] likeParams,
+			// sorting
+			@RequestParam(name = "sort", required = false, defaultValue = "id|asc") List<String> sorting
+
+	) {
+
+		Map<String, Map<String, List<String>>> inputTransform = new HashMap<>();
+		Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword = new HashMap<>();
+
+		if (equalParams != null) {
+			inputTransform = validateInput(equalParams);
+			keyword.put(OperationQuery.EQUALS, inputTransform);
+		}
+		if (greaterThanParams != null) {
+			inputTransform = validateInput(greaterThanParams);
+			keyword.put(OperationQuery.GREATER_THAN, inputTransform);
+		}
+		if (lessThanParams != null) {
+			inputTransform = validateInput(lessThanParams);
+			keyword.put(OperationQuery.LESS_THAN, inputTransform);
+		}
+		if (likeParams != null) {
+			inputTransform = validateInput(likeParams);
+			keyword.put(OperationQuery.LIKE, inputTransform);
+		}
+
 		Page<RegistrationEntity> registrations = null;
+
 		if (keyword != null) {
 //			System.out.println("thuc hien 1");
 			registrations = registrationSer.getAll(PageRequest.of(page, 20, Sort.by(UtilController.listSort(sorting))), keyword);

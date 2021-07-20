@@ -37,7 +37,7 @@ public class ClassController {
     @Autowired
     private ClassMapper ClassConverter;
 
-    private static final Logger log = LogManager.getLogger(TeacherController.class);
+    private static final Logger log = LogManager.getLogger(ClassController.class);
 
     private Map<String, Map<String, List<String>>> validateInput(String [] params) {
         Map<String, Map<String, List<String>>> inputTransform = new HashMap<>();
@@ -77,12 +77,11 @@ public class ClassController {
 //		System.out.println("equal name " + equalName);
 //
         Map<String, Map<String, List<String>>> inputTransform = new HashMap<>();
-        Map<OperationQuery, Map<String, Map<String, List<String>>> > keyword = new HashMap<>();
+        Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword = new HashMap<>();
+
         if (equalParams != null) {
             inputTransform = validateInput(equalParams);
-
             keyword.put(OperationQuery.EQUALS, inputTransform);
-
         }
         if (greaterThanParams != null) {
             inputTransform = validateInput(greaterThanParams);
@@ -96,7 +95,6 @@ public class ClassController {
             inputTransform = validateInput(likeParams);
             keyword.put(OperationQuery.LIKE, inputTransform);
         }
-
         System.out.println(keyword);
 //		if(startDate != null) keyword.put("startDate", startDate.toString());
 //		if(endDate != null ) keyword.put("endDate", endDate.toString());

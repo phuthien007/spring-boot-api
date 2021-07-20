@@ -1,6 +1,7 @@
 package springboot.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,13 +21,14 @@ import springboot.Exception.BadRequestException;
 import springboot.Exception.ResourceNotFoundException;
 import springboot.FilterSpecification.FilterInput;
 import springboot.FilterSpecification.GenericSpecification1;
+import springboot.FilterSpecification.GenericSpecification3;
 import springboot.FilterSpecification.OperationQuery;
 import springboot.Repository.CourseRepository;
 
 @Service
 public class CourseService {
 
-	private static final Logger log = LogManager.getLogger(TeacherController.class);
+	private static final Logger log = LogManager.getLogger(CourseService.class);
 
 	@Autowired
 	private CourseRepository courseRep;
@@ -39,12 +41,16 @@ public class CourseService {
 
 	// tìm tất cả bản ghi có phân trang và lọc dữ liệu theo keyword
 	@Cacheable(value = "courses")
-	public Page<CourseEntity> getAll(Pageable pageable, Map<String, String> keyword) {
+	public Page<CourseEntity> getAll(Pageable pageable,
+			 Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword) {
 
-		GenericSpecification1<CourseEntity> courseSpec = new GenericSpecification1<>();
-		for( String key : keyword.keySet() ){
-			courseSpec.add(new FilterInput(key, keyword.get(key), OperationQuery.LIKE));
-		}
+		GenericSpecification3<CourseEntity> courseSpec = new GenericSpecification3<>();
+        for(OperationQuery operation : keyword.keySet()){
+            System.out.println("querying" + operation);
+            System.out.println("data "+ keyword.get(operation));
+
+            courseSpec.add(new FilterInput(operation.toString(), keyword.get(operation), operation));
+        }
 		return  courseRep.findAll(courseSpec, pageable);
 //		return courseRep.findByNameContainingOrTypeContaining(keyword, keyword, pageable);
 	}

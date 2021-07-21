@@ -67,11 +67,22 @@ public class GenericSpecification3<T> implements Specification<T> {
                                                 .equal((root.get(field)).as(String.class),
                                                         value.toString()));
 
-                                    } else {
+                                    } else if(root.get(field).getJavaType().getName().equals("java.util.String")) {
                                         predicate2 = (criteriaBuilder
                                                 .equal(criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field))),  VNCharacterUtils.unAccent(value.toLowerCase()) ));
 
+                                    } else if( root.get(field).getJavaType().getName().contains("springboot.Entity.") ){
+                                        System.out.println("root: "+ root.get(field).getJavaType().getName());
+                                        predicate2 = (criteriaBuilder
+                                                .equal(root.get(field), Long.parseLong(value) ));
+                                    } else{
+                                        predicate2 = (criteriaBuilder
+                                                .equal(root.get(field),
+                                                        (Number) castToRequiredType(
+                                                                root.get(input.getField()).getJavaType(),
+                                                                value)));
                                     }
+
                                     if (predicate1 != null) {
                                         System.out.println("Execute or");
                                         predicate1 = criteriaBuilder.or(predicate1, predicate2);
@@ -190,7 +201,7 @@ public class GenericSpecification3<T> implements Specification<T> {
                                                 .gt(root.get(field),
                                                         (Number) castToRequiredType(
                                                                 root.get(input.getField()).getJavaType(),
-                                                                input.getValue().toString())));
+                                                                value)));
 
                                     }
                                     if (predicate1 != null)
@@ -239,7 +250,7 @@ public class GenericSpecification3<T> implements Specification<T> {
                                                 .lt(root.get(field),
                                                         (Number) castToRequiredType(
                                                                 root.get(input.getField()).getJavaType(),
-                                                                input.getValue().toString())));
+                                                                value)));
 
                                     }
                                     if (predicate1 != null)

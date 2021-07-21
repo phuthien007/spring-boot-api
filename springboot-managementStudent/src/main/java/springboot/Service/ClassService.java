@@ -22,6 +22,7 @@ import springboot.FilterSpecification.FilterInput;
 import springboot.FilterSpecification.GenericSpecification2;
 import springboot.FilterSpecification.GenericSpecification3;
 import springboot.FilterSpecification.OperationQuery;
+import springboot.FilterSpecification.Specification.ClassSpecification;
 import springboot.Repository.ClassRepository;
 import springboot.Repository.CourseRepository;
 import springboot.Repository.TeacherRepository;
@@ -55,7 +56,8 @@ public class ClassService {
 	@Cacheable(cacheNames = "classes")
 	public Page<ClassEntity> getAll(Pageable pageable,
 					Map<OperationQuery, Map<String, Map<String, List<String>>>> keyword) {
-		GenericSpecification3<ClassEntity> classSpec = new GenericSpecification3<>();
+//		GenericSpecification3<ClassEntity> classSpec = new GenericSpecification3<>();
+		ClassSpecification classSpec = new ClassSpecification();
 		// using filter generic 2
 		for(OperationQuery operation : keyword.keySet()){
 			System.out.println("querying" + operation);

@@ -67,15 +67,15 @@ public class GenericSpecification3<T> implements Specification<T> {
                                                 .equal((root.get(field)).as(String.class),
                                                         value.toString()));
 
-                                    } else if(root.get(field).getJavaType().getName().equals("java.util.String")) {
+                                    } else if (root.get(field).getJavaType().getName().equals("java.util.String")) {
                                         predicate2 = (criteriaBuilder
-                                                .equal(criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field))),  VNCharacterUtils.unAccent(value.toLowerCase()) ));
+                                                .equal(criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field))), VNCharacterUtils.unAccent(value.toLowerCase())));
 
-                                    } else if( root.get(field).getJavaType().getName().contains("springboot.Entity.") ){
-                                        System.out.println("root: "+ root.get(field).getJavaType().getName());
+                                    } else if (root.get(field).getJavaType().getName().contains("springboot.Entity.")) {
+                                        System.out.println("root: " + root.get(field).getJavaType().getName());
                                         predicate2 = (criteriaBuilder
-                                                .equal(root.get(field), Long.parseLong(value) ));
-                                    } else{
+                                                .equal(root.get(field), Long.parseLong(value)));
+                                    } else {
                                         predicate2 = (criteriaBuilder
                                                 .equal(root.get(field),
                                                         (Number) castToRequiredType(
@@ -118,9 +118,13 @@ public class GenericSpecification3<T> implements Specification<T> {
                                                 .notEqual((root.get(field)).as(String.class),
                                                         value.toString()));
 
+                                    } else if (root.get(field).getJavaType().getName().contains("springboot.Entity.")) {
+                                        System.out.println("root: " + root.get(field).getJavaType().getName());
+                                        predicate2 = (criteriaBuilder
+                                                .notEqual(root.get(field), Long.parseLong(value)));
                                     } else {
                                         predicate2 = (criteriaBuilder
-                                                .notEqual(criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field))),  VNCharacterUtils.unAccent(value.toLowerCase()) ));
+                                                .notEqual(criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field))), VNCharacterUtils.unAccent(value.toLowerCase())));
 
                                     }
                                     if (predicate1 != null) {
@@ -158,6 +162,9 @@ public class GenericSpecification3<T> implements Specification<T> {
                                                 .like((root.get(field)).as(String.class),
                                                         "%" + value.toString() + "%"));
 
+                                    } else if (root.get(field).getJavaType().getName().contains("springboot.Entity.")) {
+                                        System.out.println("root: " + root.get(field).getJavaType().getName());
+                                        throw new BadRequestException("operation like unavailable with " + root.get(field).getJavaType().getName());
                                     } else {
                                         predicate2 = (criteriaBuilder
                                                 .like(criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(field))), "%" + VNCharacterUtils.unAccent(value.toLowerCase()) + "%"));
@@ -196,6 +203,10 @@ public class GenericSpecification3<T> implements Specification<T> {
                                                 .greaterThan((root.get(field)).as(Date.class),
                                                         (Date) castToRequiredType(root.get(field).getJavaType(), value)));
 
+                                    } else if (root.get(field).getJavaType().getName().contains("springboot.Entity.")) {
+                                        System.out.println("root: " + root.get(field).getJavaType().getName());
+                                        predicate2 = (criteriaBuilder
+                                                .greaterThan(root.get(field), Long.parseLong(value)));
                                     } else {
                                         predicate2 = (criteriaBuilder
                                                 .gt(root.get(field),
@@ -245,6 +256,10 @@ public class GenericSpecification3<T> implements Specification<T> {
                                                 .lessThan((root.get(field)).as(String.class),
                                                         (String) castToRequiredType(root.get(field).getJavaType(), value)));
 
+                                    } else if (root.get(field).getJavaType().getName().contains("springboot.Entity.")) {
+                                        System.out.println("root: " + root.get(field).getJavaType().getName());
+                                        predicate2 = (criteriaBuilder
+                                                .lessThan(root.get(field), Long.parseLong(value)));
                                     } else {
                                         predicate2 = (criteriaBuilder
                                                 .lt(root.get(field),
@@ -292,7 +307,6 @@ public class GenericSpecification3<T> implements Specification<T> {
         } else if (fieldType.isAssignableFrom(Date.class)) {
             return new SimpleDateFormat("yyyy-MM-dd").parse(value);
         }
-
 
         return null;
     }

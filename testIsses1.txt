@@ -28,8 +28,9 @@ integrated in field query : vấn đề ở chỗ chỉ nhập liệu thêm |asc
 10. chỉnh sửa lại specification cho phù hợp => done
 11. bóc tách text từ file pdf
 + https://products.aspose.app/pdf/vi/conversion
++ https://www.zamzar.com/
 + solution: chuyển về các định dạng dễ xử lý hơn. 
-XML định dạng dễ lấy dữ liệu nhất
+XML định dạng dễ lấy dữ liệu nhất => giải pháp lỗi do chuyển đổi mất dữ liệu
 CSV có thể chuyển về dataframe trong python để dễ dàng xử lý
 XLSX định dạng gần giống csv nhưng khó xử lý hơn.
 HTML định dạng thông tin rõ ràng nhưng không có khả năng tái xử dụng cho nhiều file pdf khác
